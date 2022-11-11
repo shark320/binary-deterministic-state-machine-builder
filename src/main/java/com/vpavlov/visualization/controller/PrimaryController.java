@@ -11,7 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
-public class PrimaryController  {
+public class PrimaryController   {
 
     @FXML
     public Pane canvas;
