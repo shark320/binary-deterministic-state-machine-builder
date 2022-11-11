@@ -1,0 +1,13 @@
+
+.text-input{
+    -fx-background-radius: 0;
+    -fx-border-color: #e76f51;
+}
+
+.pane{
+  -fx-background-color:  #faedcd;
+}
+
+.border-pane {
+    -fx-background-color: #bde0fe;
+}
