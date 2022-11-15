@@ -4,6 +4,8 @@ import com.vpavlov.machine.Alphabet;
 import com.vpavlov.machine.Machine;
 import com.vpavlov.visualization.controller.PrimaryController;
 import com.vpavlov.proprety.AppProperties;
+import com.vpavlov.visualization.machineBuilder.MachineBuilderStage;
+import com.vpavlov.visualization.selection_window.SelectionWindow;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,6 +29,8 @@ public class App extends Application {
     private static final double WIDTH = Double.parseDouble(properties.getProperty("width"));
 
     private static final double HEIGHT = Double.parseDouble(properties.getProperty("height"));
+
+    private static final String TITLE = properties.getProperty("main-title");
     private static Scene scene;
     private static PrimaryController primaryController;
 
@@ -35,13 +39,15 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         initMachine();
         testMachine();
-        scene = new Scene(loadFXML("primary"), WIDTH, HEIGHT);
+        scene = new Scene(loadFXML("primary"));
         stage.setScene(scene);
         setCustomStylesheet();
         primaryController.init();
-        //scene.getStylesheets().add(App.class.getResource("custom.css").toExternalForm());
         stage.show();
-        App.showInfoAlert(String.format("start: %s, current: %s", machine.getStartState(), machine.getCurrentState()));
+        stage.setTitle(TITLE);
+        stage.setResizable(false);
+        System.out.println(SelectionWindow.showSelectionAndWait());
+        getMachineBuilder().openAndWait();
     }
 
     public static void setRoot(String fxml) throws IOException {
@@ -59,6 +65,11 @@ public class App extends Application {
         machine = new Machine(alphabet);
     }
 
+    private static MachineBuilderStage getMachineBuilder() throws IOException{
+        MachineBuilderStage mb = new MachineBuilderStage();
+        return mb;
+    }
+
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         Parent parent = fxmlLoader.load();
@@ -69,7 +80,7 @@ public class App extends Application {
     public static void showInfoAlert(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(message);
-        alert.show();
+        alert.showAndWait();
     }
 
     public static Alphabet getAlphabet(){
@@ -88,6 +99,10 @@ public class App extends Application {
         machine.addTransition("1", "B", "A");
         machine.addTransition("0", "B", "B");
         machine.setStartState("A");
+    }
+
+    public static AppProperties getProperties() {
+        return properties;
     }
 
 
