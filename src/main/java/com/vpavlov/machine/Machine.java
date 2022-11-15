@@ -1,7 +1,5 @@
 package com.vpavlov.machine;
 
-import com.vpavlov.App;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,8 +46,8 @@ public class Machine {
     public boolean addTransition(String symbol, String from, String to){
         State fromState = states.get(from);
         State toState = states.get(to);
-        if (fromState == null || toState == null){
-            //no states with specified titles
+        if (fromState == null || toState == null || !alphabet.contains(symbol)){
+            //no states with specified titles or invalid symbol
             return false;
         }
 
@@ -65,9 +63,19 @@ public class Machine {
         return isComplete && (startState!=null);
     }
 
-    public void setStartState(String title){
-        this.startState = title;
-        this.currentState = this.startState;
+    public boolean setStartState(String title){
+        if (this.startState==null) {
+            this.startState = title;
+            this.currentState = this.startState;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void removeStartState(){
+        this.startState = null;
+        this.currentState = null;
     }
 
     public String getCurrentState(){
@@ -84,5 +92,6 @@ public class Machine {
         currentState = newState.getTitle();
         return currentState;
     }
+
 
 }
