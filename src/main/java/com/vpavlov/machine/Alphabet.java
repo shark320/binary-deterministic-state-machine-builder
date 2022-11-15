@@ -20,6 +20,10 @@ public class Alphabet {
         return this.symbols;
     }
 
+    public boolean contains(String symbol){
+        return symbols.contains(symbol);
+    }
+
     public void addSymbol(String symbol){
         symbols.add(symbol);
     }
