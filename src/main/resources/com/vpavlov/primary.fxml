@@ -12,7 +12,7 @@
 
 
 <?import javafx.scene.control.Button?>
-<BorderPane fx:controller="com.vpavlov.visualization.controller.PrimaryController" styleClass="border-pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:controller="com.vpavlov.visualization.controller.PrimaryController" styleClass="border-pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"  xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <top>
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="File">
@@ -25,7 +25,7 @@
        </MenuBar>
    </top>
    <center>
-      <Pane fx:id="canvas" styleClass="pane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="canvas" styleClass="pane" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
       <TextField fx:id="input" BorderPane.alignment="CENTER">
