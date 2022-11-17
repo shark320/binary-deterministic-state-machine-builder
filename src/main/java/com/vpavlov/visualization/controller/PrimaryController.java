@@ -1,8 +1,7 @@
 package com.vpavlov.visualization.controller;
 
 import com.vpavlov.proprety.AppProperties;
-import com.vpavlov.visualization.draw_model.MachineNode;
-import com.vpavlov.visualization.machineBuilder.handlers.KeyPressedHandler;
+import com.vpavlov.services.machine.MachineService;
 import com.vpavlov.visualization.handlers.TextInputController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,8 +13,6 @@ import java.util.*;
 
 public class PrimaryController implements Initializable {
 
-    public static final double MINIMAL_NODE_DISTANCE = 20;
-
     private static final AppProperties properties = AppProperties.getInstance();
 
     @FXML
@@ -24,14 +21,8 @@ public class PrimaryController implements Initializable {
     @FXML
     public TextField input;
 
-    private Map<String,MachineNode> machineNodes = new HashMap();
+    private MachineService machineService;
 
-
-    public void init() {
-        canvas.getChildren().addAll(machineNodes.values());
-        input.textProperty().addListener(new TextInputController(this));
-
-    }
 
     public Pane getCanvas(){
         return canvas;
@@ -41,9 +32,15 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         double paneWidth = Double.parseDouble(properties.getProperty("canvas-width"));
         double paneHeight = Double.parseDouble(properties.getProperty("canvas-height"));
+        input.textProperty().addListener(new TextInputController(this));
         getCanvas().setPrefWidth(paneWidth);
         getCanvas().setPrefHeight(paneHeight);
         getCanvas().setMinWidth(paneWidth);
         getCanvas().setMinHeight(paneHeight);
+    }
+
+    public void setMachineService(MachineService machineService){
+        this.machineService = machineService;
+        canvas.getChildren().add(machineService.getMachineGraph());
     }
 }
