@@ -1,4 +1,4 @@
-module org.example {
+module com.vpavlov {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -10,4 +10,6 @@ module org.example {
     opens com.vpavlov.visualization.machineBuilder.controller to javafx.fxml;
     exports com.vpavlov.visualization.selection_window.controller;
     opens com.vpavlov.visualization.selection_window.controller to javafx.fxml;
+    exports com.vpavlov.visualization.tools.custom_alert.controller;
+    opens com.vpavlov.visualization.tools.custom_alert.controller to javafx.fxml;
 }
