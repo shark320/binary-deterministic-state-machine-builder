@@ -1,5 +1,6 @@
 package com.vpavlov.visualization.draw_model;
 
+import com.vpavlov.machine.Machine;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Region;
@@ -7,44 +8,55 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MachineNode extends Region {
 
-    private static final Color DEFAULT_NODE_COLOR = Color.AQUA;
-
-    private static final Color CURRENT_NODE_COLOR = Color.RED;
-
-    private static final Color SELECTION_NODE_COLOR = Color.BLUE;
-
-    private static final Color START_NODE_BORDER_COLOR = Color.YELLOW;
-
-    private static final Color END_NODE_BORDER_COLOR = Color.ORANGE;
-
     private static final double DEFAULT_NODE_RADIUS = 20;
 
-    private static final double SPECIAL_NODE_BORDER_WIDTH = DEFAULT_NODE_RADIUS*0.2;
+    private static final String DEFAULT_NODE_STYLE = "machine-node";
 
-    private final Map<String,TransitionLine> transitions = new HashMap<>();
+    private static final String SELECTED_NODE_STYLE = "machine-node-selected";
 
-    private final TransitionLine transitionLoop = null;
+    private static final String CURRENT_NODE_STYLE = "machine-node-current";
 
-    private Circle circle;
+    private static final String START_NODE_STYLE = "machine-node-start";
 
-    private Text title;
+    private static final String FINAL_NODE_STYLE = "machine-node-final";
+
+    private static final String TEXT_NODE_STYLE = "machine-node-title";
+
+
+    private final Map<MachineNode,TransitionLine> transitionsIn = new HashMap<>();
+
+    private final Map<MachineNode,TransitionLine> transitionsOut = new HashMap<>();
+
+    private final Circle circle;
+
+    private final Text title;
+
+    private int serialNumber;
+    private boolean isStartNode = false;
+
+    private boolean isFinalNode = false;
 
     private boolean isCurrent = false;
 
-    public MachineNode(double x, double y, String title){
-        circle = new Circle(x, y, DEFAULT_NODE_RADIUS, DEFAULT_NODE_COLOR);
+    public MachineNode(double x, double y, String title, int serialNumber){
+        circle = new Circle(x, y, DEFAULT_NODE_RADIUS);
         this.title = createTitle(x,y,title);
+        this.title.getStyleClass().add(TEXT_NODE_STYLE);
         this.getChildren().addAll(circle,this.title);
+        this.serialNumber = serialNumber;
+        this.circle.getStyleClass().add(DEFAULT_NODE_STYLE);
     }
 
-    public MachineNode (MachineNode node){
-        circle = node.circle;
-        title = node.title;
+    public int getSerialNumber(){
+        return serialNumber;
+    }
+
+    public void setSerialNumber(int serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     private Text createTitle(double x, double y, String title){
@@ -58,8 +70,28 @@ public class MachineNode extends Region {
     }
 
     public void setAsStartNode(){
-        circle.setStrokeWidth(SPECIAL_NODE_BORDER_WIDTH);
-        circle.setStroke(START_NODE_BORDER_COLOR);
+        isStartNode = true;
+        circle.getStyleClass().add(START_NODE_STYLE);
+        //circle.getStyleClass().add("machine-node-start");
+    }
+
+    public void unsetAsStartNode(){
+        isStartNode = false;
+        circle.getStyleClass().remove(START_NODE_STYLE);
+    }
+
+    public void setAsFinalNode(){
+        isFinalNode = true;
+        circle.getStyleClass().add(FINAL_NODE_STYLE);
+    }
+
+    public void unsetAsFinalNode(){
+        isFinalNode = false;
+        circle.getStyleClass().remove(FINAL_NODE_STYLE);
+    }
+
+    public boolean isFinalNode() {
+        return isFinalNode;
     }
 
     @Override
@@ -100,36 +132,91 @@ public class MachineNode extends Region {
     }
 
     public void select(){
-        circle.setFill(SELECTION_NODE_COLOR);
+        circle.getStyleClass().add(SELECTED_NODE_STYLE);
     }
 
     public void unselect(){
-        if (!isCurrent) {
-            circle.setFill(DEFAULT_NODE_COLOR);
-        }else{
-            setAsCurrent();
-        }
+        circle.getStyleClass().remove(SELECTED_NODE_STYLE);
     }
 
     public void setAsCurrent(){
         isCurrent = true;
-        circle.setFill(CURRENT_NODE_COLOR);
+        circle.getStyleClass().add(CURRENT_NODE_STYLE);
     }
 
     public void unsetAsCurrent(){
         isCurrent = false;
-        circle.setFill(DEFAULT_NODE_COLOR);
+        circle.getStyleClass().remove(CURRENT_NODE_STYLE);
     }
 
     public String getTitle(){
         return this.title.getText();
     }
 
+    public void setTitle(String newTitle){
+        this.title.setText(newTitle);
+    }
 
+    public boolean isStartNode(){
+        return isStartNode;
+    }
+
+    public void addTransitionIn(TransitionLine transition, MachineNode fromNode){
+        transitionsIn.put(fromNode,transition);
+    }
+
+    public void addTransitionOut(TransitionLine transition, MachineNode toNode){
+        transitionsOut.put(toNode,transition);
+    }
+
+    public TransitionLine getTransitionIn (MachineNode fromNode){
+        return transitionsIn.get(fromNode);
+    }
+
+    public TransitionLine getTransitionOut (MachineNode toNode){
+        return transitionsOut.get(toNode);
+    }
+
+    public void removeTransitionIn(MachineNode fromNode){
+        transitionsIn.remove(fromNode);
+    }
+
+    public void removeTransitionOut(MachineNode toNode){
+        transitionsOut.remove(toNode);
+    }
+
+
+    public Collection<TransitionLine> removeAllTransitions(){
+        Set<TransitionLine> toRemove = new HashSet<>();
+        toRemove.addAll(removeAllTransitionsIn());
+        toRemove.addAll(removeAllTransitionsOut());
+
+        return toRemove;
+    }
+
+    private Collection<TransitionLine> removeAllTransitionsIn(){
+        Set<TransitionLine> toRemove = new HashSet<>();
+        for (MachineNode node : transitionsIn.keySet()){
+            TransitionLine transitionLine = transitionsIn.get(node);
+            node.removeTransitionOut(this);
+            toRemove.add(transitionLine);
+        }
+        return toRemove;
+    }
+
+    private Collection<TransitionLine> removeAllTransitionsOut(){
+        Set<TransitionLine> toRemove = new HashSet<>();
+        for (MachineNode node : transitionsOut.keySet()){
+            TransitionLine transitionLine = transitionsOut.get(node);
+            node.removeTransitionIn(this);
+            toRemove.add(transitionLine);
+        }
+        return toRemove;
+    }
 
     @Override
     public String toString(){
-        return String.format("(MachineNode '%s' [%f , %f] : %f)",title.getText(), circle.getCenterX(), circle.getCenterY(), circle.getRadius());
+        return String.format("(MachineNode <%d> '%s' [%f , %f] : %f)",serialNumber,title.getText(), circle.getCenterX(), circle.getCenterY(), circle.getRadius());
     }
 
     public Point2D getPosition(){
