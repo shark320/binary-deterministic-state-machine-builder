@@ -1,13 +1,58 @@
+* {
+    -pane-color: #003049;
+    -border-pane-color: #2f3e46;
+    -button-color: #ced4da;
+    -accept-button-color: #8ac926;
+    -cancel-button-color: #c32f27;
+    -focused-button-color: #80ffdb;
+    -button-text-color: black;
+    -menu-text-color: #adb5bd;
+    -menu-color: #212529;
+}
 
-.text-input{
+
+.text-input {
     -fx-background-radius: 0;
     -fx-border-color: #e76f51;
 }
 
-.pane{
-  -fx-background-color:  #faedcd;
+.pane {
+    -fx-background-color: -pane-color;
 }
 
 .border-pane {
-    -fx-background-color: #bde0fe;
+    -fx-background-color: -border-pane-color;
 }
+
+.button{
+    -fx-background-color: -button-color;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-text-fill: -button-text-color;
+}
+
+.accept-button {
+    -fx-background-color: -accept-button-color;
+}
+
+.button:focused{
+    -fx-border-color: -focused-button-color;
+}
+
+.cancel-button {
+    -fx-background-color: -cancel-button-color;
+}
+
+.menu-bar{
+    -fx-base: -menu-color;
+    /*-fx-border-color: -border-pane-color;*/
+    -fx-background-color: -menu-color;
+    -fx-fill: -menu-color;
+}
+
+
+
+.menu-item{
+    -fx-base: -menu-color;
+}
+
