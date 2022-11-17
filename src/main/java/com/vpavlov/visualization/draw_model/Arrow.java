@@ -4,19 +4,27 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.shape.Line;
 
+import java.util.Collection;
+
 public class Arrow extends ATitledLine {
+    
+    private static final double TITLE_PLACE = 0.7;
 
     private final Line line;
 
-    public Arrow(String title) {
-        this(new Line(), new Line(), new Line(), title);
+    public Arrow(Collection<String> titles) {
+
+        this(new Line(), new Line(), new Line(), titles);
     }
 
     private static final double arrowLength = 20;
     private static final double arrowWidth = 7;
 
-    private Arrow(Line line, Line arrow1, Line arrow2, String title) {
-        super(title);
+    private Arrow(Line line, Line arrow1, Line arrow2, Collection<String> titles) {
+        super(titles);
+        line.getStyleClass().add("titled-line");
+        arrow1.getStyleClass().add("titled-line");
+        arrow2.getStyleClass().add("titled-line");
         this.getChildren().addAll(line, arrow1, arrow2);
         this.line = line;
         ChangeListener<Number> updater = (o,d,d1) -> {
@@ -123,15 +131,23 @@ public class Arrow extends ATitledLine {
     public String toString() {
         return String.format("(Arrow [%f , %f] --> [%f , %f] )", line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
     }
+    
+    protected double getLength(){
+        double dX = getStartX() - getEndX();
+        double dY = getStartY() - getEndY();
+        return Math.sqrt(dX*dX + dY*dY);
+    }
 
     @Override
     protected void calculateTitle() {
-        double cx = Math.abs(getEndX() + getStartX())/2;
-        double cy = Math.abs(getEndY() + getStartY())/2;
-        double angle = -calculateAngle(getStartX(), getStartY(), getEndX(), getEndY());
-        double textPadding = Math.signum(angle)>0?title.getLayoutBounds().getWidth():0;
-        double x = cx - TITLE_PADDING*Math.sin(angle)-textPadding;
-        double y = cy - TITLE_PADDING*Math.cos(angle);
+        double angle = calculateAngle(getStartX(), getStartY(), getEndX(), getEndY());
+        double length = getLength();
+        double cx = getStartX() + length*TITLE_PLACE*Math.cos(Math.abs(angle))*Math.signum(getEndX()-getStartX());
+        double cy = getStartY() + length*TITLE_PLACE*Math.sin(Math.abs(angle))*Math.signum(getEndY()-getStartY());
+        double pAngle = -angle;
+        double textPadding = Math.signum(pAngle)>0?title.getLayoutBounds().getWidth():0;
+        double x = cx - TITLE_PADDING*Math.sin(pAngle)-textPadding;
+        double y = cy - TITLE_PADDING*Math.cos(pAngle);
         title.setX(x);
         title.setY(y);
     }
