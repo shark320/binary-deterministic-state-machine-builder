@@ -22,7 +22,7 @@ public class MachineBuilderStage extends Stage {
 
     private boolean isActive = false;
 
-    public MachineBuilderStage () throws IOException {
+    private MachineBuilderStage () throws IOException {
         super(StageStyle.UNIFIED);
         FXMLLoader loader = new FXMLLoader(App.class.getResource("machineBuilder.fxml"));
         Scene scene = new Scene(loader.load());
@@ -32,24 +32,21 @@ public class MachineBuilderStage extends Stage {
         this.setTitle(TITLE);
         this.setScene(scene);
         this.initModality(Modality.APPLICATION_MODAL);
+        this.setOnCloseRequest(e->controller.closeRequest());
     }
 
-    public MachineService openAndWait(){
-        isActive = true;
-        controller.createMachineService();
-        showAndWait();
+    public static MachineService openAndWait(){
+        try {
+            MachineBuilderStage instance = new MachineBuilderStage();
+            instance.isActive = true;
+            instance.controller.createMachineService();
+            instance.showAndWait();
 
-        return controller.getMachineService();
-    }
+            return instance.controller.getMachineService();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-    public MachineService create(){
-        isActive = false;
-        hide();
-        return controller.getMachineService();
-    }
-
-    public boolean isActive(){
-        return isActive;
     }
 
 }
