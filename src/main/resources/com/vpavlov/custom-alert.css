@@ -1,0 +1,52 @@
+* {
+    -alert-pane-color: #2f3e46;
+    -alert-button-color: #6c757d;
+    -alert-button-text-color: #a8dadc;
+    -alert-button-ok-color: #6096ba;
+    -alert-button-cancel-color: #723d46;
+    -focused-button-color: #80ffdb;
+    -alert-text-color: #a8dadc;
+}
+
+.alert-pane {
+    -fx-background-color: -alert-pane-color;
+}
+
+.alert-button {
+    -fx-background-color: -alert-button-color;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-text-fill: -alert-button-text-color;
+}
+
+.alert-button:focused{
+    -fx-border-color: -focused-button-color;
+}
+
+.alert-message{
+    -fx-fill: -alert-text-color;
+    -fx-text-fill: -alert-text-color;
+    -fx-background-color: transparent;
+    -fx-font-size: 15px;
+    -fx-text-alignment: center;
+}
+
+.alert-message .content{
+    -fx-background-color: -alert-pane-color;
+    -fx-text-alignment: center;
+    -fx-font-size: 15px;
+}
+
+
+.alert-header{
+    -fx-fill: -alert-text-color;
+}
+
+.alert-ok-button{
+    -fx-background-color: -alert-button-ok-color;
+}
+
+.alert-cancel-button{
+    -fx-background-color: -alert-button-cancel-color;
+}
