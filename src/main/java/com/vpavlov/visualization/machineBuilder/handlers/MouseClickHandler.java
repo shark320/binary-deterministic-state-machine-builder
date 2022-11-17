@@ -40,16 +40,4 @@ public class MouseClickHandler implements EventHandler<MouseEvent> {
         }
         mouseEvent.consume();
     }
-
-    private boolean checkDistance(Point2D point){
-        double distance;
-        for (MachineNode node : controller.getMachineNodes().values()){
-            distance = point.distance(node.getPosition());
-            if (distance < (node.getRadiusProperty().get()*2 + PrimaryController.MINIMAL_NODE_DISTANCE)){
-                return false;
-            }
-        }
-
-        return true;
-    }
 }
