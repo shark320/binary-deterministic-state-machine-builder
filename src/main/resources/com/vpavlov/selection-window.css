@@ -1,0 +1,46 @@
+* {
+    -selection-pane-color: #2f3e46;
+    -selection-button-color: #6096ba;
+    -selection-button-text-color: #a8dadc;
+    -focused-button-color: #80ffdb;
+    -checkbox-color: #71a9f7;
+    -checkbox-border-color: #6b5ca5;
+    -checkbox-text-color: #a8dadc;
+}
+
+.selection-button{
+    -fx-background-color: -selection-button-color;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-text-fill: -selection-button-text-color;
+}
+
+.selection-button:focused{
+    -fx-border-color: -focused-button-color;
+}
+
+.selection-pane{
+    -fx-background-color: -selection-pane-color;
+}
+
+.check-box .box{
+    -fx-background-color: -checkbox-color;
+    -fx-background-radius: 3;
+    -fx-border-width: 0;
+}
+
+.check-box{
+    -fx-text-fill: -checkbox-text-color;
+}
+
+.check-box:selected .mark {
+
+    -fx-background-color: blue;
+
+}
+
+.check-box:selected .box {
+
+    -fx-background-color: #28a3f4;
+}
