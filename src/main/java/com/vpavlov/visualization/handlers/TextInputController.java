@@ -45,7 +45,7 @@ public class TextInputController implements ChangeListener<String> {
             //App.showInfoAlert(String.format("s: %s, s1: %s, new: %s", s, s1, newSymbol));
             if (checkSymbol(newSymbol)) {
                 input.setText(s1);
-                makeTransition(newSymbol);
+                //makeTransition(newSymbol);
             } else {
                 input.setText(s);
             }
@@ -63,9 +63,5 @@ public class TextInputController implements ChangeListener<String> {
         return false;
     }
 
-    private void makeTransition(String symbol){
-        String prevState = machine.getCurrentState();
-        String newState = machine.transition(symbol);
-        App.showInfoAlert(String.format("[%s] --%s--> [%s]",prevState,symbol, newState));
-    }
+
 }
