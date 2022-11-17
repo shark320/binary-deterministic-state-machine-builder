@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import java.util.Collection;
+
 public class NodeArrow extends Arrow {
 
     private class CoordinatesChangedListener implements ChangeListener<Number> {
@@ -25,8 +27,8 @@ public class NodeArrow extends Arrow {
 
     private DoubleProperty nodeRadius;
 
-    public NodeArrow(MachineNode startNode, MachineNode endNode, String title) {
-        super(title);
+    public NodeArrow(MachineNode startNode, MachineNode endNode, Collection<String> titles) {
+        super(titles);
         this.startNodeX = startNode.getCenterXProperty();
         this.startNodeY = startNode.getCenterYProperty();
         this.endNodeX = endNode.getCenterXProperty();
@@ -41,8 +43,8 @@ public class NodeArrow extends Arrow {
         endNodeY.addListener(updater);
 
         calculateArrow();
-        calculateTitle();
         configureTitles();
+        calculateTitle();
     }
 
     private void calculateArrow() {
