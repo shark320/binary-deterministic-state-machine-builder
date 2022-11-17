@@ -1,0 +1,42 @@
+*{
+    line-color: #a8dadc;
+    default-node-color: #00b4d8;
+    selected-node-color: #e76f51;
+    start-node-border-color: #ffb703;
+    final-node-border-color: #ff006e;
+    current-node-color: #bc4749;
+    title-color: #343a40;
+}
+
+.titled-line {
+    -fx-stroke: line-color;
+    -fx-text-fill: line-color;
+}
+
+.machine-node-title{
+    -fx-fill: title-color;
+}
+
+.machine-node{
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-fill: default-node-color;
+}
+
+.machine-node-start{
+    -fx-stroke-width: 3;
+    -fx-stroke: start-node-border-color;
+}
+
+.machine-node-final{
+    -fx-stroke-width: 3;
+    -fx-stroke: final-node-border-color;
+}
+
+.machine-node-current{
+    -fx-fill: current-node-color;
+}
+
+.machine-node-selected{
+    -fx-fill: selected-node-color;
+}
