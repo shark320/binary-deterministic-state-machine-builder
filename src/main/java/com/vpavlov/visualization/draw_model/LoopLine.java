@@ -6,6 +6,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 
+import java.util.Collection;
+
 public class LoopLine extends ATitledLine {
 
     private class CoordinatesChangedListener implements ChangeListener<Number>{
@@ -40,8 +42,9 @@ public class LoopLine extends ATitledLine {
     private double cyCenter;
 
 
-    public LoopLine(MachineNode node, String title){
-        super(title);
+    public LoopLine(MachineNode node, Collection<String> titles){
+        super(titles);
+        cubicCurve.getStyleClass().add("titled-line");
         this.nodeX = node.getCenterXProperty();
         this.nodeY = node.getCenterYProperty();
         this.nodeRadius = node.getRadiusProperty();
