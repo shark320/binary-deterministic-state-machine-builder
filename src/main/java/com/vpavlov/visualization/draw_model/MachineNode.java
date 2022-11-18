@@ -34,30 +34,39 @@ public class MachineNode extends Region {
     private final Circle circle;
 
     private final Text title;
-
-    private int serialNumber;
     private boolean isStartNode = false;
 
     private boolean isFinalNode = false;
 
     private boolean isCurrent = false;
 
-    public MachineNode(double x, double y, String title, int serialNumber){
+    public MachineNode(double x, double y, String title){
         circle = new Circle(x, y, DEFAULT_NODE_RADIUS);
         this.title = createTitle(x,y,title);
         this.title.getStyleClass().add(TEXT_NODE_STYLE);
-        this.getChildren().addAll(circle,this.title);
-        this.serialNumber = serialNumber;
+        this.getChildren().addAll(this.circle,this.title);
         this.circle.getStyleClass().add(DEFAULT_NODE_STYLE);
     }
 
-    public int getSerialNumber(){
-        return serialNumber;
+    public MachineNode(MachineNode node){
+        double x = node.circle.getCenterX();
+        double y = node.circle.getCenterY();
+        this.circle = new Circle(x, y, DEFAULT_NODE_RADIUS);
+        this.title = createTitle(x,y,node.getTitle());
+        this.title.getStyleClass().add(TEXT_NODE_STYLE);
+        this.getChildren().addAll(this.circle,this.title);
+        this.circle.getStyleClass().add(DEFAULT_NODE_STYLE);
+        if (node.isStartNode){
+            this.isStartNode = true;
+            this.setAsStartNode();
+        }
+        if (node.isFinalNode){
+            this.isFinalNode = true;
+            this.setAsFinalNode();
+        }
+        this.isCurrent = false;
     }
 
-    public void setSerialNumber(int serialNumber) {
-        this.serialNumber = serialNumber;
-    }
 
     private Text createTitle(double x, double y, String title){
         Text t = new Text(title);
@@ -216,7 +225,7 @@ public class MachineNode extends Region {
 
     @Override
     public String toString(){
-        return String.format("(MachineNode <%d> '%s' [%f , %f] : %f)",serialNumber,title.getText(), circle.getCenterX(), circle.getCenterY(), circle.getRadius());
+        return String.format("(MachineNode '%s' [%f , %f] : %f)",title.getText(), circle.getCenterX(), circle.getCenterY(), circle.getRadius());
     }
 
     public Point2D getPosition(){
