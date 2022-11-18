@@ -16,8 +16,9 @@
    <top>
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="File">
-               <MenuItem mnemonicParsing="false" text="Save" />
-               <MenuItem mnemonicParsing="false" text="Open" />
+               <MenuItem fx:id="saveFile" mnemonicParsing="false" text="Save" />
+               <MenuItem fx:id="editMachine" mnemonicParsing="false" text="Edit" />
+               <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" />
            </Menu>
            <Menu mnemonicParsing="false" text="Help">
                <MenuItem mnemonicParsing="false" text="About" />
@@ -35,7 +36,7 @@
       </TextField>
    </bottom>
    <right>
-      <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
