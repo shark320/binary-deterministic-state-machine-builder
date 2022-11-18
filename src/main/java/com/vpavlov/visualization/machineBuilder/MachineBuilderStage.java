@@ -46,6 +46,17 @@ public class MachineBuilderStage extends Stage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static MachineService openAndWait(MachineService machineService){
+        try {
+            MachineBuilderStage instance = new MachineBuilderStage();
+            instance.controller.setMachineService(machineService);
+            instance.showAndWait();
+            return instance.controller.getMachineService();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
