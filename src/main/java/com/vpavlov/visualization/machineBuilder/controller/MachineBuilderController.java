@@ -2,10 +2,10 @@ package com.vpavlov.visualization.machineBuilder.controller;
 
 import com.vpavlov.proprety.AppProperties;
 import com.vpavlov.services.machine.MachineService;
+import com.vpavlov.services.machine.exceptions.StartStateSetException;
+import com.vpavlov.services.machine.exceptions.TransitionsExistException;
 import com.vpavlov.visualization.draw_model.MachineNode;
 import com.vpavlov.visualization.draw_model.TransitionLine;
-import com.vpavlov.visualization.machineBuilder.exceptions.StartNodeSetException;
-import com.vpavlov.visualization.machineBuilder.exceptions.TransitionLinesExistsException;
 import com.vpavlov.visualization.machineBuilder.handlers.KeyPressedHandler;
 import com.vpavlov.visualization.machineBuilder.handlers.MouseClickHandler;
 import com.vpavlov.visualization.machineBuilder.handlers.MouseDragHandler;
@@ -73,6 +73,7 @@ public class MachineBuilderController implements Initializable {
                 message.append("Final states are not set.\n");
             }
             if (message.isEmpty()) {
+                unselectAll();
                 closeStage(e);
             } else {
                 CustomAlert.showInfoAlert(message.toString());
@@ -99,13 +100,17 @@ public class MachineBuilderController implements Initializable {
                 return node;
             }
         }
-
         return null;
     }
 
     public void createMachineService() {
         machineService = new MachineService();
         canvas.getChildren().add(machineService.getMachineGraph());
+    }
+
+    public void setMachineService(MachineService machineService) {
+        this.machineService = machineService;
+        canvas.getChildren().add(this.machineService.getMachineGraph());
     }
 
     public MachineService getMachineService() {
@@ -168,10 +173,10 @@ public class MachineBuilderController implements Initializable {
         Set<String> symbols = SelectionWindow.showCheckSelectionAndWait(machineService.getAlphabet().getSymbols());
         if (symbols != null) {
             try {
-                machineService.addTransition(symbols, firstSelectedNode, secondSelectedNode);
-            } catch (TransitionLinesExistsException e) {
-                if (showTransitionsReplaceConfirmMessage(e.getTransitionLines())) {
-                    machineService.addAndReplaceTransitions(symbols, firstSelectedNode, secondSelectedNode);
+                machineService.addTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle());
+            } catch (TransitionsExistException e) {
+                if (showTransitionsReplaceConfirmMessage(machineService.getMachineGraph().getExitingTransitionLines(e.getFrom(),e.getTransitions()))) {
+                    machineService.addAndReplaceTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle());
                 }
             }
             unselectAll();
@@ -196,7 +201,7 @@ public class MachineBuilderController implements Initializable {
             }
             case 1 -> {
                 if (CustomAlert.showConfirmAlert(String.format("Are you sure you want to remove node <%s>?", firstSelectedNode.getTitle()))) {
-                    machineService.removeNode(firstSelectedNode);
+                    machineService.removeNode(firstSelectedNode.getTitle());
                     unselectAll();
                 }
             }
@@ -245,17 +250,17 @@ public class MachineBuilderController implements Initializable {
                 } else {
                     if (!firstSelectedNode.isStartNode()) {
                         try {
-                            machineService.setAsStartNode(firstSelectedNode);
+                            machineService.setAsStartNode(firstSelectedNode.getTitle());
                             unselectAll();
-                        } catch (StartNodeSetException e) {
-                            if (showStartNodeOverrideConfirm(e.getStartNode())) {
-                                machineService.overrideStartNode(firstSelectedNode);
+                        } catch (StartStateSetException e) {
+                            if (showStartNodeOverrideConfirm(e.getStartStateTitle())) {
+                                machineService.overrideStartNode(firstSelectedNode.getTitle());
                                 unselectAll();
                             }
                         }
                     } else {
-                        if (showRemoveStartNodeConfirm(firstSelectedNode)) {
-                            machineService.unsetAsStartNode(firstSelectedNode);
+                        if (showRemoveStartNodeConfirm(firstSelectedNode.getTitle())) {
+                            machineService.unsetAsStartNode(firstSelectedNode.getTitle());
                             unselectAll();
                         }
                     }
@@ -274,11 +279,11 @@ public class MachineBuilderController implements Initializable {
                     unselectAll();
                 } else {
                     if (!firstSelectedNode.isFinalNode()) {
-                        machineService.setAsFinalNode(firstSelectedNode);
+                        machineService.setAsFinalNode(firstSelectedNode.getTitle());
                         unselectAll();
                     } else {
-                        if (showRemoveFinalNodeConfirm(firstSelectedNode)) {
-                            machineService.unsetAsFinalNode(firstSelectedNode);
+                        if (showRemoveFinalNodeConfirm(firstSelectedNode.getTitle())) {
+                            machineService.unsetAsFinalNode(firstSelectedNode.getTitle());
                             unselectAll();
                         }
                     }
@@ -288,18 +293,18 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
-    private boolean showRemoveFinalNodeConfirm(MachineNode node) {
-        String message = String.format("Are you sure you want to unset node <%s> as final node?", node.getTitle());
+    private boolean showRemoveFinalNodeConfirm(String node) {
+        String message = String.format("Are you sure you want to unset node <%s> as final node?", node);
         return CustomAlert.showConfirmAlert(message);
     }
 
-    private boolean showRemoveStartNodeConfirm(MachineNode startNode) {
-        String message = String.format("Are you sure you want to unset node <%s> as start node?", startNode.getTitle());
+    private boolean showRemoveStartNodeConfirm(String startNode) {
+        String message = String.format("Are you sure you want to unset node <%s> as start node?", startNode);
         return CustomAlert.showConfirmAlert(message);
     }
 
-    private boolean showStartNodeOverrideConfirm(MachineNode startNode) {
-        String message = String.format("Are you sure you want to override start node <%s> ?", startNode.getTitle());
+    private boolean showStartNodeOverrideConfirm(String startNode) {
+        String message = String.format("Are you sure you want to override start node <%s> ?", startNode);
         return CustomAlert.showConfirmAlert(message);
     }
 
