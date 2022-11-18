@@ -1,15 +1,16 @@
 package com.vpavlov.machine;
 
-import com.vpavlov.machine.exceptions.StartStateSetException;
-import com.vpavlov.machine.exceptions.TransitionsExistException;
+import com.vpavlov.services.machine.exceptions.StartStateSetException;
+import com.vpavlov.services.machine.exceptions.TransitionsExistException;
+import com.vpavlov.services.api.TitleGenerator;
 
 import java.util.*;
 
 public class Machine {
 
-    private final Map<String, State> states = new HashMap<>();
+    private final Map<String, State> states;
 
-    private final Set<State> finalStates = new HashSet<>();
+    private final Set<State> finalStates;
 
     private State currentState = null;
 
@@ -17,12 +18,75 @@ public class Machine {
 
     private final Alphabet alphabet;
 
-    public Machine(Alphabet alphabet) {
+    private int statesCount = 0;
+
+    private final TitleGenerator titleGenerator;
+
+    public Machine(Alphabet alphabet,TitleGenerator titleGenerator) {
+        this.states = new HashMap<>();
+        this.finalStates = new HashSet<>();
+        this.titleGenerator = titleGenerator;
         this.alphabet = alphabet;
     }
 
-    public void addState(String title, int serialNumber) {
+    public Machine(Machine machine){
+        this.currentState = null;
+        this.alphabet = machine.alphabet;
+        this.titleGenerator = machine.titleGenerator;
+        this.statesCount = machine.statesCount;
+        this.states = copyStates(machine.states);
+        this.startState = states.get(machine.startState.getTitle());
+        this.finalStates = copyFinalStates(machine.finalStates);
+        copyTransitions(machine.states);
+        System.out.printf("Source machine:\n%s", machine);
+        System.out.printf("Copied machine:\n%s", this);
+    }
+
+    private Set<State> copyFinalStates(Set<State> finalStates) {
+        Set<State> newFinalStates = new HashSet<>();
+        for (State state : finalStates) {
+            newFinalStates.add(states.get(state.getTitle()));
+        }
+
+        return newFinalStates;
+    }
+
+    private void copyTransitions(Map<String, State> states) {
+        for(State state : states.values()){
+            State newToState = this.states.get(state.getTitle());
+            copyTransitionsIn(newToState, state.getTransitionsIn());
+        }
+    }
+
+    private void copyTransitionsIn(State toState ,Map<String, Set<State>> transitions) {
+        for(String symbol : transitions.keySet()){
+            Set<State> states = transitions.get(symbol);
+            for (State fromState : states){
+                State newFromState = this.states.get(fromState.getTitle());
+                toState.addTransitionIn(symbol, newFromState);
+                newFromState.addTransitionOut(symbol, toState);
+            }
+        }
+    }
+
+    private Map<String, State> copyStates(Map<String, State> states) {
+        Map<String, State> statesCopies = new HashMap<String, State>();
+        for (State state : states.values()) {
+            statesCopies.put(state.getTitle(), new State(state));
+        }
+
+        return statesCopies;
+    }
+
+    public void addState() {
+        String title = titleGenerator.generateTitle(statesCount);
         states.put(title, new State(title));
+        ++statesCount;
+    }
+
+    public void addState(String title){
+        states.put(title, new State(title));
+        ++statesCount;
     }
 
     public void addFinalState(String title) {
@@ -56,9 +120,9 @@ public class Machine {
             return false;
         }
 
-        Map<String, State> exitingTransitions = getExistingTransitions(symbols, from);
+        Map<String, String> exitingTransitions = getExistingTransitions(symbols, from);
         if (!exitingTransitions.isEmpty()) {
-            throw new TransitionsExistException(fromState, exitingTransitions);
+            throw new TransitionsExistException(fromState.getTitle(), exitingTransitions);
         }
 
         for (String symbol : symbols) {
@@ -82,13 +146,13 @@ public class Machine {
         return true;
     }
 
-    public Map<String, State> getExistingTransitions(Collection<String> symbols, String from) {
+    public Map<String, String> getExistingTransitions(Collection<String> symbols, String from) {
         State fromState = states.get(from);
-        Map<String, State> exitingTransitions = new HashMap<>();
+        Map<String, String> exitingTransitions = new HashMap<>();
         for (String symbol : symbols) {
             State existingState = fromState.getTransitionOut(symbol);
             if (existingState != null) {
-                exitingTransitions.put(symbol, existingState);
+                exitingTransitions.put(symbol, existingState.getTitle());
             }
         }
 
@@ -120,15 +184,15 @@ public class Machine {
             this.startState = states.get(title);
             this.currentState = this.startState;
         } else {
-            throw new StartStateSetException(startState);
+            throw new StartStateSetException(startState.getTitle());
         }
     }
 
-    public State overrideStartNode(String title){
+    public String overrideStartNode(String title){
         State previous = startState;
         startState = states.get(title);
         currentState = startState;
-        return previous;
+        return previous.getTitle();
     }
 
 
@@ -165,11 +229,38 @@ public class Machine {
         }
     }
 
-    public void removeState(String symbol) {
-        State state = states.get(symbol);
+    public void removeState(String title) {
+        --statesCount;
+        State state = states.get(title);
         state.removeAllTransitions();
-        states.remove(symbol);
+        states.remove(title);
+        renameStates(title);
     }
 
+    private void renameStates(String removedTitle ) {
+        Set<State> renamedStates = new HashSet<>();
+        for (State state : states.values()) {
+            if (state.getTitle().compareTo(removedTitle) > 0) {
+                String newTitle = String.valueOf((char) (state.getTitle().charAt(0) - 1));
+                state.rename(newTitle);
+                renamedStates.add(state);
+            }
+        }
+        for (State state : renamedStates) {
+            states.put(state.getTitle(), state);
 
+        }
+        states.remove(titleGenerator.generateTitle(statesCount));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Start state: %s\n\n", startState.getTitle()));
+        for (State state : states.values()) {
+            sb.append(state.toString()).append("\n\n");
+        }
+
+        return sb.toString();
+    }
 }
