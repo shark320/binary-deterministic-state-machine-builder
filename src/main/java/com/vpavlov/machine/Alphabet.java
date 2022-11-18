@@ -7,14 +7,20 @@ import java.util.Set;
 
 public class Alphabet {
 
-    private final Set<String> symbols = new HashSet<>();
+    private final Set<String> symbols;
 
     public Alphabet (String... symbols){
+        this.symbols = new HashSet<>();
         this.symbols.addAll(Arrays.asList(symbols));
     }
 
     public Alphabet(String symbols){
+        this.symbols = new HashSet<>();
         this.symbols.addAll(Arrays.asList(symbols.split(",")));
+    }
+
+    public Alphabet(Alphabet alphabet){
+        this.symbols = new HashSet<>(alphabet.symbols);
     }
 
     public Set<String> getSymbols(){
