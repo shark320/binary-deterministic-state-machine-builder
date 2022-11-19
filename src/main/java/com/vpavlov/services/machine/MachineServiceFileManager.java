@@ -44,6 +44,7 @@ public final class MachineServiceFileManager {
     }
 
     public static MachineService createFromFile(File file) throws IOException{
+        if (file==null) return null;
         MachineService machineService = new MachineService();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         List<String> linesList = reader.lines().toList();
