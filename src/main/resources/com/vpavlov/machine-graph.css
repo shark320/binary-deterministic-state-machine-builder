@@ -1,10 +1,10 @@
 *{
     line-color: #a8dadc;
-    default-node-color: #00b4d8;
+    default-node-color: #5efffb;
     selected-node-color: #e76f51;
-    start-node-border-color: #ffb703;
-    final-node-border-color: #ff006e;
-    current-node-color: #bc4749;
+    start-node-border-color: #ee9b00;
+    final-node-border-color: #ae2012;
+    current-node-color: #e9d8a6;
     title-color: #343a40;
 }
 
@@ -24,12 +24,12 @@
 }
 
 .machine-node-start{
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 5;
     -fx-stroke: start-node-border-color;
 }
 
 .machine-node-final{
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 5;
     -fx-stroke: final-node-border-color;
 }
 
