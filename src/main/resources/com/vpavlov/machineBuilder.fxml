@@ -9,7 +9,7 @@
 
 <BorderPane fx:controller="com.vpavlov.visualization.machineBuilder.controller.MachineBuilderController" styleClass="border-pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <Pane fx:id="canvas" styleClass="pane" BorderPane.alignment="CENTER" />
+      <Pane fx:id="canvasPane" styleClass="canvas" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
       <HBox alignment="CENTER" prefHeight="56.0" prefWidth="600.0" spacing="50.0" BorderPane.alignment="CENTER">
