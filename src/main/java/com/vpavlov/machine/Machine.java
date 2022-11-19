@@ -205,19 +205,14 @@ public class Machine {
         this.currentState = null;
     }
 
-    public State getCurrentState() {
-        return currentState;
+    public String getStartState() {
+        return startState.getTitle();
     }
 
-    public State getStartState() {
-        return startState;
-    }
-
-    public State transition(String symbol) {
-        State current = states.get(currentState);
-        State newState = current.getTransition(symbol);
-        currentState = newState;
-        return currentState;
+    public String transition(String symbol) {
+        State current = states.get(currentState.getTitle());
+        currentState = current.getTransition(symbol);
+        return currentState.getTitle();
     }
 
     public void removeTransitions(String from, String to, Collection<String> symbols) {
@@ -251,6 +246,22 @@ public class Machine {
 
         }
         states.remove(titleGenerator.generateTitle(statesCount));
+    }
+
+    public void setCurrentState(String title){
+        currentState = states.get(title);
+    }
+
+    public String getCurrentState(){
+        return currentState.getTitle();
+    }
+
+    public boolean isFinalState(){
+        return finalStates.contains(currentState);
+    }
+
+    public void reset(){
+        currentState = startState;
     }
 
     @Override
