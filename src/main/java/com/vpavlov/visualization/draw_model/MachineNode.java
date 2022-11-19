@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MachineNode extends Region {
 
-    private static final double DEFAULT_NODE_RADIUS = 20;
+    private static final double DEFAULT_NODE_RADIUS = 30;
 
     private static final String DEFAULT_NODE_STYLE = "machine-node";
 
