@@ -40,12 +40,9 @@ public class MouseDragHandler implements EventHandler<MouseEvent> {
     }
 
     private boolean checkCoordinates(Point2D point, MachineNode node){
-        double width = controller.getCanvas().getWidth();
-        double height = controller.getCanvas().getHeight();
+        double width = controller.getCanvasPane().getWidth();
+        double height = controller.getCanvasPane().getHeight();
         double radius = node.getRadius();
-        if (point.getX() < (0+radius) || point.getX() > (width-radius) || point.getY()<(0+radius) || point.getY()>(height-radius)){
-            return false;
-        }
-        return true;
+        return !(point.getX() < (0 + radius)) && !(point.getX() > (width - radius)) && !(point.getY() < (0 + radius)) && !(point.getY() > (height - radius));
     }
 }
