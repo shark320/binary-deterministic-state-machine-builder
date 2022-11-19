@@ -10,19 +10,16 @@ import javafx.scene.control.TextField;
 
 public class TextInputController implements ChangeListener<String> {
 
-    private final Alphabet alphabet;
 
     private final TextField input;
 
-    private final Machine machine;
 
     private PrimaryController controller;
 
     public TextInputController(PrimaryController controller) {
         //bind machine-related objects
-        this.alphabet = App.getAlphabet();
-        this.machine = App.getMachine();
-        this.input = controller.input;
+        this.controller = controller;
+        this.input = controller.getInput();
     }
 
     private boolean isLoop = false;
@@ -33,34 +30,39 @@ public class TextInputController implements ChangeListener<String> {
         String newSymbol;
         if (s == null || s1 == null || isLoop)
             return;
-        //App.showInfoAlert(String.format("s: %s, s1: %s", s, s1));
-        //App.showInfoAlert(alphabet.getSymbols().toString());
         isLoop = true;
-        //TODO propagate event
         //prevent deleting
         if (s1.length() < s.length()) {
             input.setText(s);
         }else {
             newSymbol = s1.substring(s.length());
-            //App.showInfoAlert(String.format("s: %s, s1: %s, new: %s", s, s1, newSymbol));
-            if (checkSymbol(newSymbol)) {
-                input.setText(s1);
-                //makeTransition(newSymbol);
-            } else {
+            if (controller.isMachineSet()) {
+                switch (newSymbol) {
+                    case "u" -> {
+                        controller.undoSymbol();
+                        input.setText(s1);
+                    }
+                    case "r" ->{
+                        controller.resetMachine();
+                        input.setText(s1);
+                    }
+                    case "q" ->{
+                        controller.quit();
+                        input.setText(s1);
+                    }
+                    default -> {
+                        if (controller.useSymbol(newSymbol)) {
+                            input.setText(s1);
+                        } else {
+                            input.setText(s);
+                        }
+                    }
+                }
+            }else{
                 input.setText(s);
             }
         }
         isLoop = false;
-    }
-
-    private boolean checkSymbol(String s){
-        for (String symbol : alphabet.getSymbols()){
-            if (s.equals(symbol)){
-                return true;
-            }
-        }
-
-        return false;
     }
 
 
