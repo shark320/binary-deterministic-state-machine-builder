@@ -86,7 +86,7 @@ public class MachineService implements Service {
         }
         int lastIndex = transitionsLog.size()-1;
         MachineTransition lastTransition = transitionsLog.get(lastIndex);
-        String previous = lastTransition.getFrom();
+        String previous = lastTransition.from();
         machine.setCurrentState(previous);
         machineGraph.setCurrentNode(previous);
         transitionsLog.remove(lastIndex);
