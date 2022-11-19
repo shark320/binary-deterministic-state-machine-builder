@@ -32,7 +32,7 @@ public class MachineBuilderController implements Initializable {
     private static final AppProperties properties = AppProperties.getInstance();
 
     @FXML
-    private Pane canvas;
+    private Pane canvasPane;
 
     @FXML
     private Button okButton;
@@ -55,11 +55,11 @@ public class MachineBuilderController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         double paneWidth = Double.parseDouble(properties.getProperty("canvas-width"));
         double paneHeight = Double.parseDouble(properties.getProperty("canvas-height"));
-        canvas.setPrefWidth(paneWidth);
-        canvas.setPrefHeight(paneHeight);
-        canvas.setOnMouseClicked(new MouseClickHandler(this));
-        canvas.setOnMouseDragged(new MouseDragHandler(this));
-        canvas.setOnKeyPressed(new KeyPressedHandler(this));
+        canvasPane.setPrefWidth(paneWidth);
+        canvasPane.setPrefHeight(paneHeight);
+        canvasPane.setOnMouseClicked(new MouseClickHandler(this));
+        canvasPane.setOnMouseDragged(new MouseDragHandler(this));
+        canvasPane.setOnKeyPressed(new KeyPressedHandler(this));
 
         okButton.setOnAction(e -> {
             StringBuilder message = new StringBuilder();
@@ -86,6 +86,8 @@ public class MachineBuilderController implements Initializable {
             closeStage(e);
         });
 
+        System.out.println(canvasPane.getStyle());
+        System.out.println(canvasPane.getStylesheets());
     }
 
     private void closeStage(ActionEvent e) {
@@ -105,20 +107,20 @@ public class MachineBuilderController implements Initializable {
 
     public void createMachineService() {
         machineService = new MachineService();
-        canvas.getChildren().add(machineService.getMachineGraph());
+        canvasPane.getChildren().add(machineService.getMachineGraph());
     }
 
     public void setMachineService(MachineService machineService) {
         this.machineService = machineService;
-        canvas.getChildren().add(this.machineService.getMachineGraph());
+        canvasPane.getChildren().add(this.machineService.getMachineGraph());
     }
 
     public MachineService getMachineService() {
         return machineService;
     }
 
-    public Pane getCanvas() {
-        return canvas;
+    public Pane getCanvasPane() {
+        return canvasPane;
     }
 
     public void selectNode(MachineNode node) {
