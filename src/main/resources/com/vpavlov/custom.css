@@ -1,5 +1,5 @@
 * {
-    -pane-color: #003049;
+    -canvas-color: #00283b;
     -border-pane-color: #2f3e46;
     -button-color: #ced4da;
     -accept-button-color: #8ac926;
@@ -16,17 +16,37 @@
     -list-cell-odd: #4a4e69;
     -list-cell-text-color: #a8dadc;
 
+    -hyperlink-color:#ffafcc;
+    -hyperlink-color-visited:#a8dadc;
+
     -scrollbar-thumb-color: #003049;
 }
 
+.hyperlink{
+    -fx-font-size: 15;
+    -fx-text-fill: -hyperlink-color;
+}
+
+.hyperlink:visited{
+    -fx-font-size: 15;
+    -fx-text-fill: -hyperlink-color-visited;
+}
+
+.start-vbox{
+    -fx-background-color: -canvas-color;
+}
 
 .text-input {
     -fx-background-radius: 0;
     -fx-border-color: #e76f51;
 }
 
+.canvas {
+    -fx-background-color: -canvas-color;
+}
+
 .pane {
-    -fx-background-color: -pane-color;
+    -fx-background-color: -canvas-color;
 }
 
 .border-pane {
@@ -74,6 +94,10 @@
 
 .list-view{
     -fx-background-color: -list-view-background-color;
+}
+
+.list-view .list-cell{
+    -fx-alignment: center;
 }
 
 .list-view .list-cell:odd {
