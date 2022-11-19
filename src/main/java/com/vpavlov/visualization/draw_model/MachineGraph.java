@@ -17,6 +17,8 @@ public class MachineGraph extends Group {
 
     private final TitleGenerator titleGenerator;
 
+    private MachineNode currentNode = null;
+
     public MachineGraph(TitleGenerator titleGenerator) {
         this.titleGenerator = titleGenerator;
         this.nodes = new HashMap<>();
@@ -25,6 +27,7 @@ public class MachineGraph extends Group {
     }
 
     public MachineGraph(MachineGraph machineGraph) {
+        this.currentNode = null;
         this.machineNodesCount = machineGraph.machineNodesCount;
         this.titleGenerator = machineGraph.titleGenerator;
         this.nodes = copyNodes(machineGraph.nodes);
@@ -172,5 +175,14 @@ public class MachineGraph extends Group {
 
     public Set<TransitionLine> getTransitionLines() {
         return transitionLines;
+    }
+
+    public void setCurrentNode(String nextState) {
+        MachineNode node = nodes.get(nextState);
+        if (currentNode != null){
+            currentNode.unsetAsCurrent();
+        }
+        currentNode = node;
+        currentNode.setAsCurrent();
     }
 }
