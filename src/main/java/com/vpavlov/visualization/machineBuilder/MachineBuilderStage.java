@@ -26,7 +26,7 @@ public class MachineBuilderStage extends Stage {
         super(StageStyle.UNIFIED);
         FXMLLoader loader = new FXMLLoader(App.class.getResource("machineBuilder.fxml"));
         Scene scene = new Scene(loader.load());
-        scene.getStylesheets().add(App.class.getResource(properties.getProperty("custom-stylesheet")).toExternalForm());
+        scene.getStylesheets().add(App.class.getResource("custom.css").toExternalForm());
         controller = loader.getController();
         this.setResizable(false);
         this.setTitle(TITLE);
