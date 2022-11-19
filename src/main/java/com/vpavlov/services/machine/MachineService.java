@@ -3,17 +3,15 @@ package com.vpavlov.services.machine;
 import com.vpavlov.App;
 import com.vpavlov.machine.Alphabet;
 import com.vpavlov.machine.Machine;
-import com.vpavlov.machine.State;
 import com.vpavlov.services.machine.exceptions.StartStateSetException;
 import com.vpavlov.services.machine.exceptions.TransitionsExistException;
 import com.vpavlov.services.api.Service;
 import com.vpavlov.visualization.draw_model.MachineGraph;
 import com.vpavlov.visualization.draw_model.MachineNode;
 import com.vpavlov.visualization.draw_model.TransitionLine;
-import com.vpavlov.visualization.machineBuilder.exceptions.StartNodeSetException;
-import com.vpavlov.visualization.machineBuilder.exceptions.TransitionLinesExistsException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 
 import java.util.*;
 
@@ -22,6 +20,8 @@ public class MachineService implements Service {
     private final Alphabet alphabet;
 
     private final Machine machine;
+
+    private final ObservableList<MachineTransition> transitionsLog = FXCollections.observableArrayList() ;
 
     MachineGraph machineGraph;
 
@@ -64,8 +64,47 @@ public class MachineService implements Service {
         machineGraph.unsetAsFinalNode(title);
     }
 
-    public State makeTransition(String symbol) {
-        return machine.transition(symbol);
+    public boolean makeTransition(String symbol) {
+        if (!alphabet.contains(symbol)) {
+            return false;
+        }
+        String currentState = machine.getCurrentState();
+        String nextState = machine.transition(symbol);
+        machineGraph.setCurrentNode(nextState);
+        transitionsLog.add(new MachineTransition(symbol, currentState, nextState));
+        return true;
+    }
+
+    public void initStart(){
+        String start = machine.getStartState();
+        machineGraph.setCurrentNode(start);
+    }
+
+    public void undo() throws IllegalStateException{
+        if (transitionsLog.isEmpty()) {
+            throw new IllegalStateException("The machine in initial state.");
+        }
+        int lastIndex = transitionsLog.size()-1;
+        MachineTransition lastTransition = transitionsLog.get(lastIndex);
+        String previous = lastTransition.getFrom();
+        machine.setCurrentState(previous);
+        machineGraph.setCurrentNode(previous);
+        transitionsLog.remove(lastIndex);
+    }
+
+    public boolean reset() throws IllegalStateException{
+        if (transitionsLog.isEmpty()){
+            throw new IllegalStateException("The machine is already reset.");
+        }
+        boolean isFinalState = machine.isFinalState();
+        machine.reset();
+        initStart();
+        transitionsLog.clear();
+        return isFinalState;
+    }
+
+    public boolean quit(){
+        return machine.isFinalState();
     }
 
     public void addMachineNode(Point2D point) {
@@ -159,6 +198,10 @@ public class MachineService implements Service {
 
     public Set<TransitionLine> getTransitionLines() {
         return machineGraph.getTransitionLines();
+    }
+
+    public ObservableList<MachineTransition> getTransitionsLog(){
+        return transitionsLog;
     }
 
 }
