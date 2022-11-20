@@ -28,8 +28,22 @@ public final class CustomAlert extends Stage {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("custom-alert-info.fxml"));
         try {
             CustomAlert instance = new CustomAlert(loader);
+            instance.setTitle("Information");
             instance.controller.setMessage(message);
-            instance.controller.initInfoAlert();
+            instance.controller.initInfoErrorAlert();
+            instance.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void showErrorAlert(String message){
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("custom-alert-error.fxml"));
+        try {
+            CustomAlert instance = new CustomAlert(loader);
+            instance.setTitle("Error");
+            instance.controller.setMessage(message);
+            instance.controller.initInfoErrorAlert();
             instance.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -40,6 +54,7 @@ public final class CustomAlert extends Stage {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("custom-alert-confirmation.fxml"));
         try {
             CustomAlert instance = new CustomAlert(loader);
+            instance.setTitle("Confirmation");
             instance.controller.setMessage(message);
             instance.controller.initConfirmAlert();
             instance.showAndWait();

@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CustomAlertController {
@@ -40,7 +39,7 @@ public class CustomAlertController {
         isOkButton = false;
     }
 
-    public void initInfoAlert(){
+    public void initInfoErrorAlert(){
         okButton.setOnAction(this::closeStage);
     }
 
