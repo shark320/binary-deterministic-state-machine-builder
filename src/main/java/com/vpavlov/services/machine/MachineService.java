@@ -5,7 +5,6 @@ import com.vpavlov.machine.Alphabet;
 import com.vpavlov.machine.Machine;
 import com.vpavlov.services.machine.exceptions.StartStateSetException;
 import com.vpavlov.services.machine.exceptions.TransitionsExistException;
-import com.vpavlov.services.api.Service;
 import com.vpavlov.visualization.draw_model.MachineGraph;
 import com.vpavlov.visualization.draw_model.MachineNode;
 import com.vpavlov.visualization.draw_model.TransitionLine;
@@ -15,7 +14,7 @@ import javafx.geometry.Point2D;
 
 import java.util.*;
 
-public class MachineService implements Service {
+public class MachineService{
 
     private final Alphabet alphabet;
 
