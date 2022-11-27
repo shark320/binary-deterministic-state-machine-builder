@@ -4,6 +4,7 @@ import com.vpavlov.proprety.AppProperties;
 import com.vpavlov.services.machine.MachineService;
 import com.vpavlov.services.machine.MachineServiceFileManager;
 import com.vpavlov.services.machine.MachineTransition;
+import com.vpavlov.visualization.handlers.InputFormatter;
 import com.vpavlov.visualization.handlers.TextInputController;
 import com.vpavlov.visualization.machineBuilder.MachineBuilderStage;
 import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
@@ -19,6 +20,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParsePosition;
 import java.util.*;
 
 public class PrimaryController implements Initializable {
@@ -64,8 +66,12 @@ public class PrimaryController implements Initializable {
 
     private Stage stage;
 
+    public boolean clear = false;
 
-    private TextInputController textInputController;
+
+    //private TextInputController textInputController;
+
+    private InputFormatter inputFormatter;
 
     public Pane getCanvas() {
         return canvas;
@@ -77,8 +83,10 @@ public class PrimaryController implements Initializable {
         double paneWidth = Double.parseDouble(properties.getProperty("canvas-width"));
         double paneHeight = Double.parseDouble(properties.getProperty("canvas-height"));
         startVbox.setPrefSize(paneWidth, paneHeight);
-        this.textInputController = new TextInputController(this);
-        input.textProperty().addListener(textInputController);
+        this.inputFormatter = new InputFormatter(this);
+        //this.textInputController = new TextInputController(this);
+        //input.textProperty().addListener(textInputController);
+        input.setTextFormatter(inputFormatter);
 
 
         saveFile.setDisable(true);
@@ -95,6 +103,9 @@ public class PrimaryController implements Initializable {
         saveFile.setOnAction(e -> {
             if (machineService != null) {
                 File file = fileChooser.showSaveDialog(stage);
+                if (file == null) {
+                    return;
+                }
                 try {
                     MachineServiceFileManager.saveToFile(machineService, file);
                 } catch (IOException ex) {
@@ -134,13 +145,18 @@ public class PrimaryController implements Initializable {
 
     private void openFromFile() {
         File file = fileChooser.showOpenDialog(stage);
+        if (file == null) {
+            return;
+        }
         try {
             MachineService machineService = MachineServiceFileManager.createFromFile(file);
             if (machineService != null) {
                 setMachineService(machineService);
+            } else {
+                CustomAlert.showErrorAlert("An error occurred while reading machine from the file.");
             }
         } catch (IOException ex) {
-            CustomAlert.showInfoAlert("An error occurred while opening the file.");
+            CustomAlert.showErrorAlert("An error occurred while opening the file.");
         }
     }
 
@@ -167,7 +183,9 @@ public class PrimaryController implements Initializable {
 
     public void undoSymbol() {
         try {
-            machineService.undo();
+            if (!machineService.undo()) {
+                CustomAlert.showErrorAlert("An error occurred while undoing last transition.");
+            }
         } catch (IllegalStateException e) {
             CustomAlert.showInfoAlert(e.getMessage());
         }
@@ -175,12 +193,12 @@ public class PrimaryController implements Initializable {
 
     public void resetMachine() {
         try {
-
             if (machineService.reset()) {
                 CustomAlert.showInfoAlert("Input string is accepted.");
             } else {
                 CustomAlert.showInfoAlert("Input string is not accepted.");
             }
+            clearInput();
         } catch (IllegalStateException e) {
             CustomAlert.showInfoAlert(e.getMessage());
         }
@@ -231,12 +249,28 @@ public class PrimaryController implements Initializable {
         machineService.initStart();
 
         canvas.getChildren().add(machineService.getMachineGraph());
+
+//        input.setTextFormatter(new TextFormatter<Object>(change -> {
+//            System.out.println(change.getControlNewText());
+//            if (change.isDeleted()) {
+//                return null;
+//            }
+//            if (machineService.getAlphabet().contains(change.getControlNewText())) {
+//                return change;
+//            }
+//            return null;
+//        }));
     }
 
     private void clearInput() {
-        input.textProperty().removeListener(textInputController);
+    //input = new TextField();
+    //rootPane.setBottom(input);
+    //input.textProperty().addListener(textInputController);
+        input.setTextFormatter(null);
         input.clear();
-        input.textProperty().addListener(textInputController);
+        input.setTextFormatter(inputFormatter);
+
+//        input.textProperty().addListener(textInputController);
     }
 
     public TextField getInput() {
