@@ -4,6 +4,7 @@
     -button-color: #ced4da;
     -accept-button-color: #8ac926;
     -cancel-button-color: #c32f27;
+    -close-button-color: #a2d2ff;
     -focused-button-color: #80ffdb;
     -button-text-color: black;
     -menu-text-color: #adb5bd;
@@ -72,6 +73,10 @@
     -fx-background-color: -cancel-button-color;
 }
 
+.close-button {
+    -fx-background-color:-close-button-color;
+}
+
 .menu-bar{
     -fx-base: -menu-color;
     -fx-background-color: -menu-color;
@@ -85,6 +90,30 @@
 .text-field{
     -fx-background-color:-text-field-color;
     -fx-text-fill: -text-field-text-color;
+}
+
+.text-area{
+    -fx-background-color: -border-pane-color;
+    -fx-text-fill: -text-field-text-color;
+    -fx-control-inner-background: -border-pane-color;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.text-area .content{
+    -fx-background-color: -border-pane-color;
+    -fx-text-fill: -text-field-text-color;
+    -fx-control-inner-background: -border-pane-color;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.text-area:focused .content{
+    -fx-background-color: -border-pane-color;
+    -fx-text-fill: -text-field-text-color;
+    -fx-control-inner-background: -border-pane-color;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .list-view .list-cell:even {
@@ -109,15 +138,14 @@
 .scroll-bar:vertical .thumb {
     -fx-background-color :derive(-scrollbar-thumb-color,90.0%);
     -fx-background-insets : 2.0, 0.0, 0.0;
-    -fx-background-radius : 0;
-    -fx-scale-x: 2;
+    -fx-background-radius : 10 !important;
+    -fx-scale-x: 1.5;
 }
 
 .scroll-bar:horizontal .thumb:hover,
 .scroll-bar:vertical .thumb:hover {
     -fx-background-color :derive(-scrollbar-thumb-color,40.0%);
     -fx-background-insets : 2.0, 0.0, 0.0;
-    -fx-background-radius : 0;
 }
 
 .scroll-bar:vertical,

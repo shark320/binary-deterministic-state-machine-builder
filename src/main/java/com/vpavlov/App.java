@@ -2,6 +2,7 @@ package com.vpavlov;
 
 import com.vpavlov.visualization.controller.PrimaryController;
 import com.vpavlov.proprety.AppProperties;
+import com.vpavlov.visualization.help_window.HelpWindowStage;
 import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -48,6 +49,11 @@ public class App extends Application {
         stage.show();
         stage.setTitle(TITLE);
         stage.setResizable(false);
+        stage.setOnCloseRequest(e->onCloseRequest());
+    }
+
+    private void onCloseRequest() {
+        HelpWindowStage.closeWindow();
     }
 
     /**

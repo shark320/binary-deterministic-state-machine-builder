@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"  styleClass="border-pane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vpavlov.visualization.controller.PrimaryController">
+<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="border-pane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vpavlov.visualization.controller.PrimaryController">
    <top>
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="File">
@@ -19,13 +19,14 @@
                <MenuItem fx:id="editMachine" mnemonicParsing="false" text="Edit" />
                <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" />
            </Menu>
-           <Menu mnemonicParsing="false" text="Help">
+           <Menu mnemonicParsing="false" text="More">
                <MenuItem mnemonicParsing="false" text="About" />
+            <MenuItem fx:id="help" mnemonicParsing="false" text="Help" />
            </Menu>
        </MenuBar>
    </top>
    <bottom>
-      <TextField fx:id="input" promptText="Input string" disable="true" BorderPane.alignment="CENTER">
+      <TextField fx:id="input" disable="true" promptText="Input string" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </BorderPane.margin>
@@ -39,7 +40,7 @@
       </ListView>
    </right>
    <center>
-      <VBox fx:id="startVbox" styleClass="start-vbox" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="startVbox" alignment="CENTER" spacing="20.0" styleClass="start-vbox" BorderPane.alignment="CENTER">
          <children>
             <Hyperlink fx:id="openLink" text="Open machine" />
             <Hyperlink fx:id="createLink" text="Create new machine" />

@@ -12,4 +12,6 @@ module com.vpavlov {
     opens com.vpavlov.visualization.selection_window.controller to javafx.fxml;
     exports com.vpavlov.visualization.tools.custom_alert.controller;
     opens com.vpavlov.visualization.tools.custom_alert.controller to javafx.fxml;
+    exports com.vpavlov.visualization.help_window.controller;
+    opens com.vpavlov.visualization.help_window.controller to javafx.fxml;
 }
