@@ -7,44 +7,85 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
+/**
+ * Custom alert window controller
+ *
+ * @author vpavlov
+ */
 public class CustomAlertController {
 
+    /**
+     * Alert message
+     */
     @FXML
     TextArea message;
 
+    /**
+     * OK button
+     */
     @FXML
     Button okButton;
 
+    /**
+     * Cancel button
+     */
     @FXML
     Button cancelButton;
 
+    /**
+     * If OK button is clicked flag
+     */
     private boolean isOkButton = false;
 
+    /**
+     * Alert message setter
+     *
+     * @param message message to set
+     */
     public void setMessage(String message) {
         this.message.setWrapText(true);
         this.message.setText(message);
     }
 
-    private void closeStage(ActionEvent e){
+    /**
+     * Close alert window
+     *
+     * @param e button clicked event
+     */
+    private void closeStage(ActionEvent e) {
         Node source = (Node) e.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Check if OK button is clicked
+     *
+     * @return true if OK button is clicked, else false
+     */
     public boolean isOkButton() {
         return isOkButton;
     }
 
-    public void poor(){
+    /**
+     * Clear data
+     */
+    public void poor() {
         isOkButton = false;
     }
 
-    public void initInfoErrorAlert(){
+    /**
+     * Init alert as error message
+     */
+    public void initInfoErrorAlert() {
         okButton.setOnAction(this::closeStage);
     }
 
-    public void initConfirmAlert(){
-        okButton.setOnAction(e->{
+    /**
+     * Init alert as confirmation message
+     */
+    public void initConfirmAlert() {
+        okButton.setOnAction(e -> {
             isOkButton = true;
             closeStage(e);
         });

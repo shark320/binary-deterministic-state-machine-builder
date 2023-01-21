@@ -5,7 +5,6 @@ import com.vpavlov.services.machine.MachineService;
 import com.vpavlov.services.machine.MachineServiceFileManager;
 import com.vpavlov.services.machine.MachineTransition;
 import com.vpavlov.visualization.handlers.InputFormatter;
-import com.vpavlov.visualization.handlers.TextInputController;
 import com.vpavlov.visualization.machineBuilder.MachineBuilderStage;
 import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
 import javafx.fxml.FXML;
@@ -20,59 +19,110 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.ParsePosition;
 import java.util.*;
 
+/**
+ * Primary scene controller
+ *
+ * @author vpavlov
+ */
 public class PrimaryController implements Initializable {
 
+    /**
+     * Application properties
+     */
     private static final AppProperties properties = AppProperties.getInstance();
 
-
+    /**
+     * Graph canvas
+     */
     private Pane canvas;
 
+    /**
+     * Root window pane
+     */
     @FXML
     private BorderPane rootPane;
 
+    /**
+     * Open file hyperlink
+     */
     @FXML
     private Hyperlink openLink;
 
+    /**
+     * Create new machine hyperlink
+     */
     @FXML
     private Hyperlink createLink;
 
+    /**
+     * Machine input
+     */
     @FXML
     private TextField input;
 
+    /**
+     * Save file menu button
+     */
     @FXML
     private MenuItem saveFile;
 
+    /**
+     * Open file menu button
+     */
     @FXML
     private MenuItem openFile;
 
+    /**
+     * Edit machine menu button
+     */
     @FXML
     private MenuItem editMachine;
 
+    /**
+     * Create new machine menu button
+     */
     @FXML
     private MenuItem createNew;
 
+    /**
+     * VBox with start hyperlinks
+     */
     @FXML
     private VBox startVbox;
 
+    /**
+     * Machine transitions log
+     */
     @FXML
     ListView<MachineTransition> listView;
 
+    /**
+     * Machine service instance
+     */
     private MachineService machineService;
 
+    /**
+     * File chooser to save/open machines
+     */
     private final FileChooser fileChooser = new FileChooser();
 
+    /**
+     * Window stage
+     */
     private Stage stage;
 
-    public boolean clear = false;
-
-
-    //private TextInputController textInputController;
-
+    /**
+     * Machine input formatter
+     */
     private InputFormatter inputFormatter;
 
+    /**
+     * Machine graph canvas getter
+     *
+     * @return machine graph canvas
+     */
     public Pane getCanvas() {
         return canvas;
     }
@@ -84,8 +134,6 @@ public class PrimaryController implements Initializable {
         double paneHeight = Double.parseDouble(properties.getProperty("canvas-height"));
         startVbox.setPrefSize(paneWidth, paneHeight);
         this.inputFormatter = new InputFormatter(this);
-        //this.textInputController = new TextInputController(this);
-        //input.textProperty().addListener(textInputController);
         input.setTextFormatter(inputFormatter);
 
 
@@ -143,6 +191,9 @@ public class PrimaryController implements Initializable {
 
     }
 
+    /**
+     * Opens machine from file
+     */
     private void openFromFile() {
         File file = fileChooser.showOpenDialog(stage);
         if (file == null) {
@@ -160,6 +211,9 @@ public class PrimaryController implements Initializable {
         }
     }
 
+    /**
+     * Opens create new machine window
+     */
     private void createNewMachine() {
         MachineService newMachineService = MachineBuilderStage.openAndWait();
         if (newMachineService != null) {
@@ -167,6 +221,9 @@ public class PrimaryController implements Initializable {
         }
     }
 
+    /**
+     * Set canvas to the main root or create new with parameters from app properties
+     */
     private void setCanvas() {
         if (canvas == null) {
             canvas = new Pane();
@@ -181,16 +238,25 @@ public class PrimaryController implements Initializable {
         rootPane.setCenter(canvas);
     }
 
+    /**
+     * Undo last transitions
+     */
     public void undoSymbol() {
         try {
             if (!machineService.undo()) {
                 CustomAlert.showErrorAlert("An error occurred while undoing last transition.");
             }
+            input.setTextFormatter(null);
+            input.deleteText(input.getLength() - 1, input.getLength());
+            input.setTextFormatter(inputFormatter);
         } catch (IllegalStateException e) {
             CustomAlert.showInfoAlert(e.getMessage());
         }
     }
 
+    /**
+     * Reset machine to its initial state
+     */
     public void resetMachine() {
         try {
             if (machineService.reset()) {
@@ -204,6 +270,9 @@ public class PrimaryController implements Initializable {
         }
     }
 
+    /**
+     * Stop and close the machine
+     */
     public void quit() {
         canvas.getChildren().removeAll(machineService.getMachineGraph());
         rootPane.setCenter(startVbox);
@@ -222,18 +291,42 @@ public class PrimaryController implements Initializable {
         machineService = null;
     }
 
+    /**
+     * Check if machine is set
+     *
+     * @return true if set, else false
+     */
     public boolean isMachineSet() {
         return machineService != null;
     }
 
+    /**
+     * Stage setter
+     *
+     * @param stage stage to set
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Propagate input symbol to the machine service
+     *
+     * @param symbol symbol to propagate
+     * @return true if the machine is set and symbol in the machine alphabet, else false
+     */
     public boolean useSymbol(String symbol) {
+        if (machineService == null) {
+            return false;
+        }
         return machineService.makeTransition(symbol);
     }
 
+    /**
+     * Machine service setter. Show machine nodes and transitions on the canvas
+     *
+     * @param machineService machine service to set
+     */
     public void setMachineService(MachineService machineService) {
         setCanvas();
 
@@ -249,30 +342,22 @@ public class PrimaryController implements Initializable {
         machineService.initStart();
 
         canvas.getChildren().add(machineService.getMachineGraph());
-
-//        input.setTextFormatter(new TextFormatter<Object>(change -> {
-//            System.out.println(change.getControlNewText());
-//            if (change.isDeleted()) {
-//                return null;
-//            }
-//            if (machineService.getAlphabet().contains(change.getControlNewText())) {
-//                return change;
-//            }
-//            return null;
-//        }));
     }
 
+    /**
+     * Clears input
+     */
     private void clearInput() {
-    //input = new TextField();
-    //rootPane.setBottom(input);
-    //input.textProperty().addListener(textInputController);
         input.setTextFormatter(null);
         input.clear();
         input.setTextFormatter(inputFormatter);
-
-//        input.textProperty().addListener(textInputController);
     }
 
+    /**
+     * Input getter
+     *
+     * @return input text field element
+     */
     public TextField getInput() {
         return input;
     }

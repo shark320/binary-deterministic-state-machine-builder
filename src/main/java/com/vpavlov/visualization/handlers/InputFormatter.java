@@ -5,27 +5,34 @@ import javafx.scene.control.TextFormatter;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Text input formatter for machine alphabet and special characters
+ *
+ * @author vpavlov
+ */
 public class InputFormatter extends TextFormatter<Object> {
 
     private static class CustomOperator implements UnaryOperator<Change> {
 
         @Override
         public Change apply(Change change) {
-            if (change.isDeleted()){
+            if (change.isDeleted()) {
                 return null;
             }
-            String newSymbol = change.getControlNewText().replace(change.getControlText(), "");
+            String newSymbol = change.getControlNewText();
+            newSymbol = newSymbol.substring(newSymbol.length() - 1);
+            System.out.println("new symbol: " + newSymbol);
             if (controller.isMachineSet()) {
                 switch (newSymbol) {
                     case "u" -> {
                         controller.undoSymbol();
                         return change;
                     }
-                    case "r" ->{
+                    case "r" -> {
                         controller.resetMachine();
                         return change;
                     }
-                    case "q" ->{
+                    case "q" -> {
                         controller.quit();
                         return change;
                     }
@@ -37,14 +44,22 @@ public class InputFormatter extends TextFormatter<Object> {
                         }
                     }
                 }
-            }else{
+            } else {
                 return null;
             }
         }
     }
 
+    /**
+     * Primary window controller
+     */
     static PrimaryController controller;
 
+    /**
+     * Constructor
+     *
+     * @param controller controller of window where machine input element is
+     */
     public InputFormatter(PrimaryController controller) {
         super(new CustomOperator());
         InputFormatter.controller = controller;

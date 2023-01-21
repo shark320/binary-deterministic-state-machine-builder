@@ -5,60 +5,107 @@ import javafx.scene.layout.Region;
 import java.util.Collection;
 import java.util.Set;
 
-public class TransitionLine extends Region{
+/**
+ * Class representing transition line in machine graph
+ *
+ * @author vpavlov
+ */
+public class TransitionLine extends Region {
 
+    /**
+     * Start machine node
+     */
     private final MachineNode start;
 
+    /**
+     * End machine node
+     */
     private final MachineNode end;
 
+    /**
+     * Title line
+     */
     private final ATitledLine line;
 
+    /**
+     * Constructor
+     *
+     * @param start  start transition node
+     * @param end    end transition node
+     * @param titles transition symbols
+     */
     public TransitionLine(MachineNode start, MachineNode end, Collection<String> titles) {
         this.start = start;
         this.end = end;
         if (end != start) {
             line = new NodeArrow(start, end, titles);
-        }else{
+        } else {
             line = new LoopLine(start, titles);
         }
         this.getChildren().add(line);
     }
 
-
-    public MachineNode getStart(){
+    /**
+     * Start node getter
+     *
+     * @return start node
+     */
+    public MachineNode getStart() {
         return this.start;
     }
 
-    public MachineNode getEnd(){
+    /**
+     * End node getter
+     *
+     * @return end node
+     */
+    public MachineNode getEnd() {
         return this.end;
     }
 
-    public void addTitle(String title){
-        line.addTitle(title);
-    }
-
-    public void removeTitle(String title){
+    /**
+     * Remove given titles
+     *
+     * @param title title to remove
+     */
+    public void removeTitle(String title) {
         line.removeTitle(title);
     }
 
-    public boolean isEmptyTitles(){
+    /**
+     * Check is the line has empty titles
+     *
+     * @return true if the line has empty titles, else false
+     */
+    public boolean isEmptyTitles() {
         return line.getTitles().isEmpty();
     }
 
-    public Set<String> getTitles(){
+    /**
+     * Line titles getter
+     *
+     * @return line titles
+     */
+    public Set<String> getTitles() {
         return line.getTitles();
     }
 
+    /**
+     * Add titles to the line
+     *
+     * @param titles titles to add
+     */
     public void addTitles(Collection<String> titles) {
         line.addTitles(titles);
     }
 
+    /**
+     * Remove titles from the line
+     *
+     * @param symbols titles to remove
+     */
     public void removeTitles(Collection<String> symbols) {
         line.removeTitles(symbols);
-    }
-
-    public boolean containsTitles(String title){
-       return line.titles.contains(title);
     }
 
     @Override

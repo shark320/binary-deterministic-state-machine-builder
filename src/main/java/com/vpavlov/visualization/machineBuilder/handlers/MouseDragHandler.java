@@ -6,12 +6,28 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Mouse drag event handler for machine builder
+ *
+ * @author vpavlov
+ */
 public class MouseDragHandler implements EventHandler<MouseEvent> {
 
+    /**
+     * Machine builder window controller
+     */
     private final MachineBuilderController controller;
 
+    /**
+     * Dragged node
+     */
     private MachineNode draggedNode;
 
+    /**
+     * Constructor
+     *
+     * @param controller machine builder window controller
+     */
     public MouseDragHandler(MachineBuilderController controller) {
         this.controller = controller;
     }
@@ -30,7 +46,7 @@ public class MouseDragHandler implements EventHandler<MouseEvent> {
                     draggedNode.setCoordinates(x, y);
                 }
             }
-        }else{
+        } else {
             if (checkCoordinates(point, draggedNode)) {
                 draggedNode.setCoordinates(x, y);
             }
@@ -39,7 +55,14 @@ public class MouseDragHandler implements EventHandler<MouseEvent> {
         mouseEvent.consume();
     }
 
-    private boolean checkCoordinates(Point2D point, MachineNode node){
+    /**
+     * Check if the node can be dragged to given coordinates
+     *
+     * @param point coordinates to drag
+     * @param node  node to drag
+     * @return true if the node can be dragged, else false
+     */
+    private boolean checkCoordinates(Point2D point, MachineNode node) {
         double width = controller.getCanvasPane().getWidth();
         double height = controller.getCanvasPane().getHeight();
         double radius = node.getRadius();

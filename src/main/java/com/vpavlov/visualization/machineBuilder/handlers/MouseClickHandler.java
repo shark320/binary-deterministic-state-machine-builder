@@ -6,9 +6,23 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Mouse click handler for machine builder
+ *
+ * @author vpavlov
+ */
 public class MouseClickHandler implements EventHandler<MouseEvent> {
+
+    /**
+     * Machine builder window controller
+     */
     private final MachineBuilderController controller;
 
+    /**
+     * Constructor
+     *
+     * @param controller machine builder window controller
+     */
     public MouseClickHandler(MachineBuilderController controller) {
         this.controller = controller;
     }
@@ -25,12 +39,12 @@ public class MouseClickHandler implements EventHandler<MouseEvent> {
                     MachineNode node = controller.getClickedMachineNode(point);
                     if (node != null) {
                         controller.selectNode(node);
-                    }else{
+                    } else {
                         controller.createNode(point);
                     }
                 }
             }
-        }else{
+        } else {
             controller.isDrag = false;
         }
         mouseEvent.consume();

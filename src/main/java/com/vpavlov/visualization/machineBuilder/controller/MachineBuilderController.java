@@ -25,30 +25,64 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+/**
+ * Class-controller for machine builder window
+ *
+ * @author vpavlov
+ */
 public class MachineBuilderController implements Initializable {
 
+    /**
+     * Minimal distance between two nodes
+     */
     public static final double MINIMAL_NODE_DISTANCE = 20;
 
+    /**
+     * App properties
+     */
     private static final AppProperties properties = AppProperties.getInstance();
 
+    /**
+     * Machine graph canvas
+     */
     @FXML
     private Pane canvasPane;
 
+    /**
+     * OK button
+     */
     @FXML
     private Button okButton;
 
+    /**
+     * Cancel button
+     */
     @FXML
     private Button cancelButton;
 
+    /**
+     * Machine service
+     */
     private MachineService machineService;
 
-
+    /**
+     * First selected node
+     */
     private MachineNode firstSelectedNode = null;
 
+    /**
+     * second selected node
+     */
     private MachineNode secondSelectedNode = null;
 
+    /**
+     * Count of selected nodes
+     */
     private int selectedNodesCount = 0;
 
+    /**
+     * Is node dragging
+     */
     public boolean isDrag;
 
     @Override
@@ -90,12 +124,26 @@ public class MachineBuilderController implements Initializable {
         System.out.println(canvasPane.getStylesheets());
     }
 
+    /**
+     * Machine builder window close method
+     *
+     * @param e button clicked event
+     */
     private void closeStage(ActionEvent e) {
+        if (!CustomAlert.showConfirmAlert("Are you sure you want to finish editing and close?")) {
+            return;
+        }
         Node source = (Node) e.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Clicked machine node getter
+     *
+     * @param point clicked point
+     * @return clicked machine node if its present, otherwise null
+     */
     public MachineNode getClickedMachineNode(Point2D point) {
         for (MachineNode node : machineService.getNodes().values()) {
             if (node.contains(point)) {
@@ -105,24 +153,47 @@ public class MachineBuilderController implements Initializable {
         return null;
     }
 
+    /**
+     * Create new machine service and display the machine graph
+     */
     public void createMachineService() {
         machineService = new MachineService();
         canvasPane.getChildren().add(machineService.getMachineGraph());
     }
 
+    /**
+     * Set machine service
+     *
+     * @param machineService machine service to set
+     */
     public void setMachineService(MachineService machineService) {
         this.machineService = machineService;
         canvasPane.getChildren().add(this.machineService.getMachineGraph());
     }
 
+    /**
+     * Get machine service
+     *
+     * @return machine service
+     */
     public MachineService getMachineService() {
         return machineService;
     }
 
+    /**
+     * Get canvas
+     *
+     * @return canvas
+     */
     public Pane getCanvasPane() {
         return canvasPane;
     }
 
+    /**
+     * Select given node
+     *
+     * @param node node to select
+     */
     public void selectNode(MachineNode node) {
         node.select();
         switch (selectedNodesCount) {
@@ -147,6 +218,9 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Remove transition between selected nodes
+     */
     public void removeTransition() {
         TransitionLine transitionLine = machineService.getTransitionLine(firstSelectedNode, secondSelectedNode);
         String firstNodeTitle = firstSelectedNode.getTitle();
@@ -156,7 +230,7 @@ public class MachineBuilderController implements Initializable {
             Set<String> toRemove = SelectionWindow.showCheckSelectionAndWait(titles);
             if (toRemove != null) {
                 if (showTransitionsRemoveConfirmMessage(firstNodeTitle, secondNodeTitle, toRemove)) {
-                    machineService.removeTransitions(firstSelectedNode, secondSelectedNode, toRemove);
+                    machineService.removeTransitions(firstSelectedNode.getTitle(), secondSelectedNode.getTitle(), toRemove);
                     unselectAll();
                 }
             }
@@ -165,26 +239,46 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Show transition remove confirmation message
+     *
+     * @param firstSelectedNode  transition from node
+     * @param secondSelectedNode transition to node
+     * @param toRemove           transition symbols to remove
+     * @return true if confirmed, else false
+     */
     private boolean showTransitionsRemoveConfirmMessage(String firstSelectedNode, String secondSelectedNode, Set<String> toRemove) {
         String message = String.format("Are you sure you want to remove transition: \n<%s> --%s--> <%s> ?", firstSelectedNode, toRemove, secondSelectedNode);
         return CustomAlert.showConfirmAlert(message);
     }
 
-
+    /**
+     * Create new transition
+     */
     public void createTransition() {
         Set<String> symbols = SelectionWindow.showCheckSelectionAndWait(machineService.getAlphabet().getSymbols());
         if (symbols != null) {
             try {
-                machineService.addTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle());
+                if (!machineService.addTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle())) {
+                    CustomAlert.showErrorAlert("An error occurred while adding new transitions.");
+                }
             } catch (TransitionsExistException e) {
-                if (showTransitionsReplaceConfirmMessage(machineService.getMachineGraph().getExitingTransitionLines(e.getFrom(),e.getTransitions()))) {
-                    machineService.addAndReplaceTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle());
+                if (showTransitionsReplaceConfirmMessage(machineService.getMachineGraph().getExitingTransitionLines(e.getFrom(), e.getTransitions()))) {
+                    if (!machineService.addAndReplaceTransitions(symbols, firstSelectedNode.getTitle(), secondSelectedNode.getTitle())) {
+                        CustomAlert.showErrorAlert("An error occurred while adding new transitions");
+                    }
                 }
             }
             unselectAll();
         }
     }
 
+    /**
+     * Shows confirmation for transitions replacement
+     *
+     * @param transitionLines transitions to replace
+     * @return true if confirmed, else false
+     */
     private boolean showTransitionsReplaceConfirmMessage(Map<String, TransitionLine> transitionLines) {
         StringBuilder message = new StringBuilder();
         message.append("Are you sure you want to replace transitions:\n");
@@ -196,6 +290,9 @@ public class MachineBuilderController implements Initializable {
         return CustomAlert.showConfirmAlert(message.toString());
     }
 
+    /**
+     * Remove selected node
+     */
     public void removeNode() {
         switch (selectedNodesCount) {
             case 0 -> {
@@ -203,7 +300,9 @@ public class MachineBuilderController implements Initializable {
             }
             case 1 -> {
                 if (CustomAlert.showConfirmAlert(String.format("Are you sure you want to remove node <%s>?", firstSelectedNode.getTitle()))) {
-                    machineService.removeNode(firstSelectedNode.getTitle());
+                    if (!machineService.removeNode(firstSelectedNode.getTitle())) {
+                        CustomAlert.showErrorAlert("An error occurred while removing the node");
+                    }
                     unselectAll();
                 }
             }
@@ -213,6 +312,11 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Create new node
+     *
+     * @param point point to create
+     */
     public void createNode(Point2D point) {
         unselectAll();
         if (checkDistance(point)) {
@@ -220,6 +324,9 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Unselect all nodes
+     */
     public void unselectAll() {
         if (selectedNodesCount != 0) {
             firstSelectedNode.unselect();
@@ -230,6 +337,12 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Check if point can be placed
+     *
+     * @param point point to check
+     * @return true if canned, false otherwise
+     */
     private boolean checkDistance(Point2D point) {
         double distance;
         for (MachineNode node : machineService.getNodes().values()) {
@@ -242,6 +355,9 @@ public class MachineBuilderController implements Initializable {
         return true;
     }
 
+    /**
+     * Set selected node as start node
+     */
     public void startNodeSetting() {
         switch (selectedNodesCount) {
             case 0 -> CustomAlert.showInfoAlert("Select one node to set as start node.");
@@ -272,6 +388,9 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Set selected node as final node
+     */
     public void finalNodeSetting() {
         switch (selectedNodesCount) {
             case 0 -> CustomAlert.showInfoAlert("Select one node to set as final node.");
@@ -295,21 +414,42 @@ public class MachineBuilderController implements Initializable {
         }
     }
 
+    /**
+     * Shows a confirmation dialog about unsetting the node as final node
+     *
+     * @param node node title to unset
+     * @return true if confirmed, else false
+     */
     private boolean showRemoveFinalNodeConfirm(String node) {
         String message = String.format("Are you sure you want to unset node <%s> as final node?", node);
         return CustomAlert.showConfirmAlert(message);
     }
 
+    /**
+     * Shows a confirmation dialog about unsetting the node as start node
+     *
+     * @param startNode node title to unset
+     * @return true if confirmed, else false
+     */
     private boolean showRemoveStartNodeConfirm(String startNode) {
         String message = String.format("Are you sure you want to unset node <%s> as start node?", startNode);
         return CustomAlert.showConfirmAlert(message);
     }
 
+    /**
+     * Shows a confirmation dialog about overriding the node as final node
+     *
+     * @param startNode node title to override
+     * @return true if confirmed, else false
+     */
     private boolean showStartNodeOverrideConfirm(String startNode) {
         String message = String.format("Are you sure you want to override start node <%s> ?", startNode);
         return CustomAlert.showConfirmAlert(message);
     }
 
+    /**
+     * Clear data
+     */
     public void closeRequest() {
         machineService = null;
     }
