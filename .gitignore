@@ -1,1 +1,5 @@
 ﻿target
+.idea
+dependency-reduced-pom.xml
+test.mcn
+test2.mcn
