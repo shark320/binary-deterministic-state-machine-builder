@@ -5,7 +5,7 @@ import com.vpavlov.services.machine.MachineService;
 import com.vpavlov.services.machine.MachineServiceFileManager;
 import com.vpavlov.services.machine.MachineTransition;
 import com.vpavlov.visualization.handlers.InputFormatter;
-import com.vpavlov.visualization.help_window.HelpWindowStage;
+import com.vpavlov.visualization.text_window.TextWindowStage;
 import com.vpavlov.visualization.machineBuilder.MachineBuilderStage;
 import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
 import javafx.fxml.FXML;
@@ -39,6 +39,12 @@ public class PrimaryController implements Initializable {
      */
     @FXML
     public MenuItem help;
+
+    /**
+     * About menu item
+     */
+    @FXML
+    public MenuItem about;
 
     /**
      * Graph canvas
@@ -196,8 +202,9 @@ public class PrimaryController implements Initializable {
 
         createNew.setOnAction(e -> createNewMachine());
 
-        help.setOnAction(e -> HelpWindowStage.showHelp());
+        help.setOnAction(e -> TextWindowStage.showHelp());
 
+        about.setOnAction(e->TextWindowStage.showAbout());
     }
 
     /**

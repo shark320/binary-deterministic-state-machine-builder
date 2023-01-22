@@ -20,7 +20,7 @@
                <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" />
            </Menu>
            <Menu mnemonicParsing="false" text="More">
-               <MenuItem mnemonicParsing="false" text="About" />
+               <MenuItem fx:id="about" mnemonicParsing="false" text="About" />
             <MenuItem fx:id="help" mnemonicParsing="false" text="Help" />
            </Menu>
        </MenuBar>

@@ -1,0 +1,12 @@
+JavaFX application. Deterministic state machine builder and presenter.
+
+This application is developing as university coursework for Theoretical Informatics subject of the University of West Bohemia in Pilsen.
+Additional functionality which is out of a coursework assignment is made only for studying purposes.
+
+Represents configurator for deterministic state machine builder with alphabet with predefined symbols.
+It is possible to enter input string contains alphabet symbols and special control characters.
+When entering a new symbol, the change in the state of the machine will be graphically visible.
+
+Machine alphabet is defined in project properties file.
+
+© Volodymyr Pavlov, 2023.

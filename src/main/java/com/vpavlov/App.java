@@ -2,8 +2,7 @@ package com.vpavlov;
 
 import com.vpavlov.visualization.controller.PrimaryController;
 import com.vpavlov.proprety.AppProperties;
-import com.vpavlov.visualization.help_window.HelpWindowStage;
-import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
+import com.vpavlov.visualization.text_window.TextWindowStage;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -53,7 +52,7 @@ public class App extends Application {
     }
 
     private void onCloseRequest() {
-        HelpWindowStage.closeWindow();
+        TextWindowStage.closeWindow();
     }
 
     /**
