@@ -1,1 +1,22 @@
-Test help text
+Final state machine visualization:
+You can open a new machine by clicking 'File' -> 'Open' and choosing .mcn file.
+You can input machine symbols and special symbols into machine input field to control the machine.
+Machine symbols:
+'0' - proceed '0' transition from the current state
+'1' - proceed '1' transition from the current state
+Special symbols:
+'u' - (undo) return machine to the previous state
+'c' - (clear) clear input string and return machine to the start state
+'q' - (quit) shutdown of the machine
+
+Machine builder or "how to create a new machine?":
+You can open machine builder by clicking 'File' -> 'Create new'.
+Left mouse button click on empty area - place new machine node.
+Left mouse button click on machine node - select machine node (maximum 2 nodes selection).
+Ctrl+C - create new transition between selected nodes.
+Ctrl+D - remove selected machine node.
+Ctrl+R - remove transition between selected machine nodes.
+Ctrl+S - set selected machine node as start state.
+Ctrl+F - set selected machine node as final state.
+
+You can also edit opened machine by clicking 'File' -> 'Edit'.
