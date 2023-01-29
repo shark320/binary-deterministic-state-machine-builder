@@ -3,11 +3,13 @@ package com.vpavlov;
 import com.vpavlov.visualization.controller.PrimaryController;
 import com.vpavlov.proprety.AppProperties;
 import com.vpavlov.visualization.text_window.TextWindowStage;
+import com.vpavlov.visualization.tools.custom_alert.CustomAlert;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -48,11 +50,16 @@ public class App extends Application {
         stage.show();
         stage.setTitle(TITLE);
         stage.setResizable(false);
-        stage.setOnCloseRequest(e->onCloseRequest());
+        stage.setOnCloseRequest(this::onCloseRequest);
+        primaryController.checkLastOpenedFile();
     }
 
-    private void onCloseRequest() {
-        TextWindowStage.closeWindow();
+    private void onCloseRequest(WindowEvent event) {
+        if (primaryController.onCLoseRequest()) {
+            TextWindowStage.closeWindow();
+        }else{
+            event.consume();
+        }
     }
 
     /**

@@ -133,6 +133,7 @@ public class MachineService {
     public void initStart() {
         String start = machine.getStartState();
         machineGraph.setCurrentNode(start);
+        machine.setCurrentState(start);
     }
 
     /**

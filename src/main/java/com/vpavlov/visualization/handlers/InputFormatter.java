@@ -26,6 +26,7 @@ public class InputFormatter extends TextFormatter<Object> {
                 switch (newSymbol) {
                     case "u" -> {
                         controller.undoSymbol();
+                        change.setText("");
                         return change;
                     }
                     case "r" -> {

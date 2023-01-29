@@ -1,9 +1,11 @@
 package com.vpavlov.visualization.controller;
 
+import com.vpavlov.App;
 import com.vpavlov.proprety.AppProperties;
 import com.vpavlov.services.machine.MachineService;
 import com.vpavlov.services.machine.MachineServiceFileManager;
 import com.vpavlov.services.machine.MachineTransition;
+import com.vpavlov.tools.SessionInfo;
 import com.vpavlov.visualization.handlers.InputFormatter;
 import com.vpavlov.visualization.text_window.TextWindowStage;
 import com.vpavlov.visualization.machineBuilder.MachineBuilderStage;
@@ -33,6 +35,11 @@ public class PrimaryController implements Initializable {
      * Application properties
      */
     private static final AppProperties properties = AppProperties.getInstance();
+
+    /**
+     * Last opened file parameter name
+     */
+    private static final String LAST_OPENED_FILE_PARAMETER = "last-opened-file";
 
     /**
      * Help menu item
@@ -131,6 +138,12 @@ public class PrimaryController implements Initializable {
      */
     private InputFormatter inputFormatter;
 
+    private boolean isSaved = true;
+
+    private boolean isActive = false;
+
+    private String fileName = null;
+
     /**
      * Machine graph canvas getter
      *
@@ -162,35 +175,34 @@ public class PrimaryController implements Initializable {
         }
 
         saveFile.setOnAction(e -> {
-            if (machineService != null) {
-                File file = fileChooser.showSaveDialog(stage);
-                if (file == null) {
-                    return;
-                }
-                try {
-                    MachineServiceFileManager.saveToFile(machineService, file);
-                } catch (IOException ex) {
-                    CustomAlert.showInfoAlert("An error occurred while writing to file.");
-                }
-            } else {
-                CustomAlert.showInfoAlert("There is no machine to save.");
-            }
+            saveToFile();
         });
 
-        openFile.setOnAction(e -> openFromFile());
+        openFile.setOnAction(e -> {
+            File file = fileChooser.showOpenDialog(stage);
+            openFromFile(file);
+        });
 
         openLink.setOnAction(e -> {
-            openFromFile();
-            openLink.setVisited(false);
+            File file = fileChooser.showOpenDialog(stage);
+            if (openFromFile(file)) {
+                openLink.setVisited(false);
+            }
         });
 
 
         editMachine.setOnAction(e -> {
+            if (isActive){
+                CustomAlert.showInfoAlert("Please end current visualization session to edit the machine.");
+                return;
+            }
             if (machineService != null) {
                 MachineService newMachineService = MachineBuilderStage.openAndWait(new MachineService(machineService));
                 if (newMachineService != null) {
                     canvas.getChildren().remove(machineService.getMachineGraph());
                     setMachineService(newMachineService);
+                    isSaved = false;
+                    setTitleWithFile();
                 }
             }
         });
@@ -207,23 +219,92 @@ public class PrimaryController implements Initializable {
         about.setOnAction(e->TextWindowStage.showAbout());
     }
 
+    public boolean onCLoseRequest(){
+        boolean saveConfirm = true;
+        boolean activeConfirm = true;
+        if (!isSaved){
+            saveConfirm = CustomAlert.showConfirmAlert("Are you sure you want to close the program without machine saving?");
+        }
+
+        if (isActive){
+            activeConfirm = CustomAlert.showConfirmAlert("Are you sure you want to close the program while machine visualization is active?");
+        }
+
+        return saveConfirm && activeConfirm;
+    }
+
+    private void saveToFile(){
+        if (machineService != null) {
+            File file = fileChooser.showSaveDialog(stage);
+            if (file == null) {
+                return;
+            }
+            try {
+                MachineServiceFileManager.saveToFile(machineService, file);
+                SessionInfo.setParameter(LAST_OPENED_FILE_PARAMETER, file.getAbsolutePath());
+                isSaved = true;
+            } catch (IOException ex) {
+                CustomAlert.showInfoAlert("An error occurred while writing to file.");
+            }
+        } else {
+            CustomAlert.showInfoAlert("There is no machine to save.");
+        }
+    }
+
+    public void checkLastOpenedFile(){
+        String fileFullName = SessionInfo.getParameter(LAST_OPENED_FILE_PARAMETER);
+        if (fileFullName!=null){
+            File file = new File(fileFullName);
+            if (file.exists()){
+                if (CustomAlert.showConfirmAlert(String.format("Continue with last opened file [%s]?", file.getName()))){
+                    openFromFile(file);
+                }
+            }
+        }
+    }
+
     /**
      * Opens machine from file
      */
-    private void openFromFile() {
-        File file = fileChooser.showOpenDialog(stage);
+    private boolean openFromFile(File file) {
         if (file == null) {
-            return;
+            return false;
         }
         try {
             MachineService machineService = MachineServiceFileManager.createFromFile(file);
             if (machineService != null) {
                 setMachineService(machineService);
+                SessionInfo.setParameter(LAST_OPENED_FILE_PARAMETER, file.getAbsolutePath());
+                input.requestFocus();
+                fileName = file.getName();
+                setTitleWithFile();
+                return true;
             } else {
                 CustomAlert.showErrorAlert("An error occurred while reading machine from the file.");
             }
         } catch (IOException ex) {
             CustomAlert.showErrorAlert("An error occurred while opening the file.");
+        }
+        return false;
+    }
+
+    private void setTitleWithFile(){
+        String mainTitle = App.getProperties().getProperty("main-title");
+        String titleWithFile;
+        if (mainTitle != null){
+            if (fileName != null){
+                titleWithFile = mainTitle + ": " + fileName + (isSaved ? "" : "*");
+            }else{
+                titleWithFile = mainTitle + ": untitled*";
+            }
+            stage.setTitle(titleWithFile);
+        }
+    }
+
+    private void setDefaultTitle(){
+        String mainTitle = App.getProperties().getProperty("main-title");
+        if (mainTitle != null){
+            stage.setTitle(mainTitle);
         }
     }
 
@@ -234,6 +315,9 @@ public class PrimaryController implements Initializable {
         MachineService newMachineService = MachineBuilderStage.openAndWait();
         if (newMachineService != null) {
             setMachineService(newMachineService);
+            fileName = null;
+            isSaved = false;
+            setTitleWithFile();
         }
     }
 
@@ -258,15 +342,22 @@ public class PrimaryController implements Initializable {
      * Undo last transitions
      */
     public void undoSymbol() {
+        System.out.println("Input: " + input.getText());
         try {
             if (!machineService.undo()) {
                 CustomAlert.showErrorAlert("An error occurred while undoing last transition.");
             }
             input.setTextFormatter(null);
-            input.deleteText(input.getLength() - 1, input.getLength());
+            if (input.getLength() <2){
+                input.clear();
+            }else {
+                input.deleteText(input.getLength() - 1, input.getLength());
+            }
             input.setTextFormatter(inputFormatter);
         } catch (IllegalStateException e) {
             CustomAlert.showInfoAlert(e.getMessage());
+            clearInput();
+            isActive =false;
         }
     }
 
@@ -281,6 +372,7 @@ public class PrimaryController implements Initializable {
                 CustomAlert.showInfoAlert("Input string is not accepted.");
             }
             clearInput();
+            isActive = false;
         } catch (IllegalStateException e) {
             CustomAlert.showInfoAlert(e.getMessage());
         }
@@ -290,6 +382,9 @@ public class PrimaryController implements Initializable {
      * Stop and close the machine
      */
     public void quit() {
+        if (!isSaved && !CustomAlert.showConfirmAlert("Are you sure you want to quit the machine without saving?")){
+            return;
+        }
         canvas.getChildren().removeAll(machineService.getMachineGraph());
         rootPane.setCenter(startVbox);
         listView.setItems(null);
@@ -305,6 +400,9 @@ public class PrimaryController implements Initializable {
             CustomAlert.showInfoAlert("Input string is not accepted.");
         }
         machineService = null;
+        isActive = false;
+        isSaved = true;
+        setDefaultTitle();
     }
 
     /**
@@ -335,7 +433,11 @@ public class PrimaryController implements Initializable {
         if (machineService == null) {
             return false;
         }
-        return machineService.makeTransition(symbol);
+        if (machineService.makeTransition(symbol)){
+            isActive = true;
+            return true;
+        }
+        return false;
     }
 
     /**
